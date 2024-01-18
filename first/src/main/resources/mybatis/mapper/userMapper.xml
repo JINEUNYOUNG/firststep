@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fullstack.first.mapper.userMapper">
+
+    <resultMap id="userResultMap" type="fullstack.first.vo.User">
+        <id property="user_idx" column="user_idx" />
+        <result property="id" column="id" />
+        <result property="password" column="password" />
+        <result property="user_name" column="user_name" />
+        <result property="resident_registration_number" column="resident_registration_number" />
+        <result property="phone_number" column="phone_number" />
+        <result property="address" column="address" />
+        <result property="admin_level" column="admin_level" />
+        <result property="user_reg_date" column="user_reg_date" />
+    </resultMap>
+
+    <!-- SELECT 문: 특정 사용자 조회 (아이디로) -->
+    <select id="findById" resultMap="userResultMap">
+        SELECT * FROM user WHERE id = #{id};
+    </select>
+</mapper>

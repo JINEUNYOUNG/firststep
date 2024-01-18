@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .field-error{
+            color:red;
+        }
+    </style>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+
+</head>
+<body>
+
+<div th:insert="~{common/header :: header}"></div>
+
+<div class="login-container">
+
+    <h2>로그인</h2>
+
+    <form th:action="@{/login}" method="post" th:object="${loginForm}">
+        <label th:for="id">아이디 :</label>
+        <input type="text" id="id" name="id" required>
+
+        <br>
+
+        <label th:for="password">비밀번호 :</label>
+        <input type="password" id="password" name="password" required>
+
+        <br>
+
+        <button type="submit">로그인1</button>
+        <button type="button" onclick="submitLoginForm()">로그인2</button>
+        <a th:href="@{/signup}" class="signup-button">
+            <button type="button">회원가입</button>
+        </a>
+        <div th:if="${#fields.hasGlobalErrors()}">
+            <p class="field-error" id="errorMessages1" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+        </div>
+<!--        아래는 비동기에서 사용할 에러 메세지 부분 -->
+            <p class="field-error" id="errorMessages2"></p>
+
+    </form>
+
+
+</div>
+
+
+<script>
+    function submitLoginForm() {
+        document.getElementById('errorMessages1').innerHTML = "";
+
+        var formData = {
+            id: document.getElementById('id').value,
+            password: document.getElementById('password').value
+        }; //getElementById로 데이터를 가져와 보낼 formData를 구성하고
+
+        axios.post('/login2', formData) //post방식으로 login에 보내기
+            .then(function (response) {
+                console.log(response.data);
+                window.location.href = '/';
+            })
+            .catch(function (error) {
+                console.error(error.response.data);
+                document.getElementById('id').value = "";
+                document.getElementById('password').value = "";
+                // 에러 메시지를 화면에 표시
+
+                document.getElementById('errorMessages2').innerHTML = '<p class="field-error">아이디 또는 비밀번호가 맞지 않습니다.</p>';
+
+            });
+    }
+</script>
+
+</body>
+</html>
