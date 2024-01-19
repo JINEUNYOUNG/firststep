@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="ko"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+    <th:block layout:fragment="script">
+
+    </th:block>
+
+    <th:block layout:fragment="css">
+       <style>
+        .field-error {
+        color: red;
+        }
+       </style>
+    </th:block>
+
+<div th:replace="common/header::header"></div>
+
+<div layout:fragment="content"></div>
+
+</html>

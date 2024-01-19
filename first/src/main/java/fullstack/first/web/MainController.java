@@ -69,5 +69,9 @@ public class MainController {
 
         return "redirect:/";
     }
+    @GetMapping("signup")
+    public String signup() throws Exception{
+        return "signup";
+    }
 
 }

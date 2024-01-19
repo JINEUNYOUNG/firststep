@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -37,6 +35,11 @@ public class MainRestController {
         session.setAttribute(SessionConstants.LOGIN_USER, loginUser);   // 세션에 로그인 회원 정보 보관
 
         return ResponseEntity.ok().body("로그인 성공");
+    }
+
+    @GetMapping("/idcheck")
+    public ResponseEntity<String> checkLoginId(@RequestParam String loginId) {
+        return ResponseEntity.ok().body("중복아님");
     }
 
 
