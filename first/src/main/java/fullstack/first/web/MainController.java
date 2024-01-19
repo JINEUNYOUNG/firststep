@@ -1,8 +1,9 @@
 package fullstack.first.web;
 
-import fullstack.first.mapper.userMapper;
 import fullstack.first.service.LoginService;
+import fullstack.first.service.SignupService;
 import fullstack.first.vo.LoginForm;
+import fullstack.first.vo.SignForm;
 import fullstack.first.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class MainController {
 
     @Autowired
     public LoginService loginService;
+    @Autowired
+    public SignupService signupService;
 
 
     //메인. 세션에 로그인정보가 있으면 모델에 넣어준다.
@@ -72,6 +75,18 @@ public class MainController {
     @GetMapping("signup")
     public String signup() throws Exception{
         return "signup";
+    }
+    @PostMapping("signup")
+    public String signupUser(@ModelAttribute("signForm") SignForm signForm,
+                                         Model model) throws Exception{
+
+
+        System.out.println(signForm.toString());
+
+
+        signupService.signup(signForm);
+
+        return "redirect:/";
     }
 
 }

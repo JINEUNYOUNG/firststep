@@ -10,32 +10,27 @@
     <!--/* 회원가입 popup */-->
     <div id="signup">
         <div class="signup_container">
-            <form id="signupForm" onsubmit="return false;" autocomplete="off">
+            <form id="signForm" th:onsubmit="return validateForm()" th:object="${signForm}" th:action="@{/signup}" method="post">
                 <table class="tb tb_row tl">
-                    <coglgroup>
-                        <col style="width:20%;"/>
-                        <col style="width:40%;"/>
-                        <col style="width:40%;"/>
-                    </coglgroup>
+
                     <tbody>
                     <tr>
                         <th scope="row">아이디</th>
                         <td>
-                            <input type="text" name="loginId" id="loginId" placeholder="아이디" maxlength="20"
+                            <input type="text" name="id" id="id" placeholder="아이디" maxlength="20"
                                    onkeyup="checkLoginId()"/>
                             <button type="button" id="idCheckBtn" class="btns btn_st5"
-                                    onclick="checkDuplicate(document.getElementById('loginId').value);">중복 확인
+                                    onclick="checkDuplicate(document.getElementById('id').value);">중복 확인
                             </button>
                         </td>
-                        <td class="success-message hide">사용할 수 있는 아이디입니다</td>
+                        <td class="success-message hide">사용할 수 있는 아이디입니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
                         <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
                         <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
                     </tr>
 
                     <tr>
                         <th scope="row">비밀번호</th>
-                        <td><input type="password" name="password" id="password" placeholder="비밀번호" maxlength="30"
-                                   onkeyup="checkPassword()"/></td>
+                        <td><input type="password" name="password" id="password" placeholder="비밀번호" maxlength="30" onkeyup="checkPassword()"/></td>
                         <td class="strongPassword-message hide">8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 사용하세요</td>
                     </tr>
                     <tr>
@@ -47,37 +42,40 @@
 
                     <tr>
                         <th scope="row">이름</th>
-                        <td><input type="text" name="name" placeholder="이름" maxlength="10"/></td>
+                        <td><input type="text" name="user_name" id="user_name" placeholder="이름" maxlength="10"/></td>
                     </tr>
                     <tr>
                         <th scope="row">주민등록번호</th>
-                        <td><input type="number" name="jumin" placeholder="숫자 13자리 입력"/></td>
+                        <td><input type="number" name="resident_registration_number" id="resident_registration_number" placeholder="숫자 13자리 입력"
+                                   onKeyup="checkJumin()"/></td>
                     </tr>
                     <tr>
                         <th scope="row">휴대전화번호</th>
-                        <td><input type="number" name="phone" placeholder="숫자 11자리 입력"/></td>
+                        <td><input type="number" name="phone_number" id="phone_number" placeholder="숫자 11자리 입력"
+                                   onKeyup="checkPhone()"/></td>
                     </tr>
                     <tr>
                         <th scope="row">주소</th>
                         <td>
-                            <input type="text" id="postcode" placeholder="우편번호">
-                            <button onclick="daumPostcode()">우편번호 찾기</button>
-                            <br>
-                            <input type="text" id="roadAddress" placeholder="도로명주소">
-                            <input type="text" id="jibunAddress" placeholder="지번주소">
+                            <input type="text" id="postcode" name="postcode" placeholder="우편번호">
+                            <input type="button" onclick="daumPostcode()" value="우편번호 찾기"><br>
+                            <input type="text" id="address" name="address" placeholder="도로명주소">
+                            <input type="text" id="jibunAddress" name="jibunAddress" placeholder="지번주소">
                             <span id="guide" style="color:#999;display:none"></span>
-                            <input type="text" id="detailAddress" placeholder="상세주소">
-                            <input type="text" id="extraAddress" placeholder="참고항목">
+                            <input type="text" id="detailAddress" name="detailAddress" placeholder="상세주소">
+                            <input type="text" id="extraAddress" name="extraAddress" placeholder="참고항목">
                         </td>
 
                     </tr>
                     </tbody>
                 </table>
+                <p class="btn_set">
+                    <button type="submit" class="btns btn_st2">가입</button>
+                    <button type="button" class="btns btn_bdr2" onclick="userReset();">리셋</button>
+                </p>
+                <p id="errorMessage" class="errorMessage"></p>
             </form>
-            <p class="btn_set">
-                <button type="button" class="btns btn_st2" onclick="saveUser();">가입</button>
-                <button type="button" class="btns btn_bdr2" onclick="userReset();">리셋</button>
-            </p>
+
         </div>
     </div>
 </th:block>
@@ -89,8 +87,8 @@
         }
     </style>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script>
+
 
         function idLength(value) {
             return value.length >= 4 && value.length <= 12
@@ -111,8 +109,8 @@
         function daumPostcode() {
             new daum.Postcode({
                 oncomplete: function (data) {
-                    var roadAddr = data.roadAddress; // 도로명 주소 변수
-                    var extraRoadAddr = ''; // 참고 항목 변수
+                    var roadAddr = data.address;
+                    var extraRoadAddr = '';
 
                     if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
                         extraRoadAddr += data.bname;
@@ -125,7 +123,7 @@
                     }
 
                     document.getElementById('postcode').value = data.zonecode;
-                    document.getElementById("roadAddress").value = roadAddr;
+                    document.getElementById("address").value = roadAddr;
                     document.getElementById("jibunAddress").value = data.jibunAddress;
 
                     if (roadAddr !== '') {
@@ -134,7 +132,8 @@
                         document.getElementById("extraAddress").value = '';
                     }
                 }
-            }).open();
+            }).open({    autoClose: true //기본값 true
+            });
         }
 
         function userReset() {
@@ -161,12 +160,12 @@
             }
         }
 
-
         function checkLoginId() {
-            let elInputId = document.getElementById('loginId');
+            let elInputId = document.getElementById('id');
             let elSuccessMessage = document.querySelector('.success-message');
             let elFailureMessage = document.querySelector('.failure-message');
             let elFailureMessageTwo = document.querySelector('.failure-message2');
+
 
             if (elInputId.value.length !== 0) {
                 // 영어 또는 숫자 외의 값을 입력했을 경우
@@ -199,7 +198,6 @@
         function checkPassword() {
             let elInputPassword = document.getElementById('password');
             let elStrongPasswordMessage = document.querySelector('.strongPassword-message');
-            // 값을 입력한 경우
 
             if (elInputPassword.value.length !== 0) {
                 if (strongPassword(elInputPassword.value)) {
@@ -207,20 +205,16 @@
                 } else {
                     elStrongPasswordMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
                 }
-            }
-                // 값을 입력하지 않은 경우 (지웠을 때)
-            // 모든 메시지를 가린다.
-            else {
+            } else {
                 elStrongPasswordMessage.classList.add('hide');
             }
-
-
         }
 
         function checkPasswordRetype() {
             let elInputPassword = document.getElementById('password');
             let elInputPasswordRetype = document.getElementById('passwordCheck');
             let elMismatchMessage = document.querySelector('.mismatch-message');
+
 
             if (elInputPasswordRetype.value.length !== 0) {
                 if (isMatch(elInputPassword.value, elInputPasswordRetype.value)) {
@@ -232,6 +226,38 @@
                 elMismatchMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
             }
         }
+
+        function checkJumin() {
+            let elInputJumin = document.getElementById('resident_registration_number');
+            elInputJumin.value = elInputJumin.value.replace(/[^0-9]/g, '');
+        }
+
+        function checkPhone() {
+            let elInputPhone = document.getElementById('phone_number');
+            elInputPhone.value = elInputPhone.value.replace(/[^0-9]/g, '');
+        }
+
+        function validateForm() {
+            // input 다 채워져있는지?
+            let hasError = false;
+            let inputElements = document.querySelectorAll('input');
+            let errorMessage = document.getElementById('errorMessage');
+            for (let i = 0; i < inputElements.length; i++) {
+                if (inputElements[i].value.trim() === '') {
+                    hasError = true;
+                    console.log("덜차있음");
+                    break;
+                }
+            }
+            if (hasError) {
+                errorMessage.innerHTML = '올바르게 기입해주세요.';
+                return false; // 함수 전체에서 빠져나가기
+            }
+            return true;
+        }
+
+
     </script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </th:block>
 

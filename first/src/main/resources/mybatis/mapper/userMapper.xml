@@ -14,8 +14,16 @@
         <result property="user_reg_date" column="user_reg_date" />
     </resultMap>
 
-    <!-- SELECT 문: 특정 사용자 조회 (아이디로) -->
+    <!-- 특정 사용자 조회 (아이디로) -->
     <select id="findById" resultMap="userResultMap">
         SELECT * FROM user WHERE id = #{id};
     </select>
+
+    <!-- 유저 등록 -->
+    <insert id="signup" parameterType="fullstack.first.vo.SignForm">
+        INSERT INTO user (id, password,user_name,resident_registration_number,phone_number,address) VALUES (#{id},  sha2(#{password},256),#{user_name}, sha2(#{resident_registration_number},256),#{phone_number},#{address});
+    </insert>
+
+
+
 </mapper>
