@@ -88,5 +88,14 @@ public class MainController {
 
         return "redirect:/";
     }
+    @GetMapping("boardlist")
+    public String boardlist() throws Exception{
+        return "boardlist";
+    }
+
+    @GetMapping("board")
+    public String board() throws Exception{
+        return "board";
+    }
 
 }

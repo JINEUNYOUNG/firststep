@@ -6,59 +6,57 @@
 <th:block layout:fragment="title">
     <title>회원가입</title>
 </th:block>
+
 <th:block layout:fragment="content">
     <!--/* 회원가입 popup */-->
-    <div id="signup">
-        <div class="signup_container">
-            <form id="signForm" th:onsubmit="return validateForm()" th:object="${signForm}" th:action="@{/signup}" method="post">
+    <div class="signup-page">
+        <div class="form">
+            <form th:class="signForm" th:id="signForm" th:onsubmit="return validateForm()" th:object="${signForm}" th:action="@{/signup}" method="post">
                 <table class="tb tb_row tl">
 
                     <tbody>
                     <tr>
-                        <th scope="row">아이디</th>
-                        <td>
+                        <td class="wrap">
                             <input type="text" name="id" id="id" placeholder="아이디" maxlength="20"
                                    onkeyup="checkLoginId()"/>
                             <button type="button" id="idCheckBtn" class="btns btn_st5"
-                                    onclick="checkDuplicate(document.getElementById('id').value);">중복 확인
-                            </button>
-                        </td>
-                        <td class="success-message hide">사용할 수 있는 아이디입니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
-                        <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
-                        <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
+                                    onclick="checkDuplicate(document.getElementById('id').value);">중복확인
+                            </button></td>
                     </tr>
-
                     <tr>
-                        <th scope="row">비밀번호</th>
+                    <td class="success-message hide">사용할 수 있는 아이디입니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
+                    <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
+                    <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
+                    </tr>
+                    <tr>
+
                         <td><input type="password" name="password" id="password" placeholder="비밀번호" maxlength="30" onkeyup="checkPassword()"/></td>
+                    </tr>
+                    <tr>
                         <td class="strongPassword-message hide">8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 사용하세요</td>
                     </tr>
                     <tr>
-                        <th scope="row">비밀번호 재입력</th>
                         <td><input type="password" name="passwordCheck" id="passwordCheck" placeholder="비밀번호 재입력"
                                    maxlength="30" onkeyup="checkPasswordRetype()"/></td>
-                        <td class="mismatch-message hide">비밀번호가 일치하지 않습니다</td>
                     </tr>
+                        <tr>
+                        <td class="mismatch-message hide">비밀번호가 일치하지 않습니다</td></tr>
 
                     <tr>
-                        <th scope="row">이름</th>
                         <td><input type="text" name="user_name" id="user_name" placeholder="이름" maxlength="10"/></td>
                     </tr>
                     <tr>
-                        <th scope="row">주민등록번호</th>
-                        <td><input type="number" name="resident_registration_number" id="resident_registration_number" placeholder="숫자 13자리 입력"
+                        <td><input type="number" name="resident_registration_number" id="resident_registration_number" placeholder="주민등록번호(숫자 13자리 입력)"
                                    onKeyup="checkJumin()"/></td>
                     </tr>
                     <tr>
-                        <th scope="row">휴대전화번호</th>
-                        <td><input type="number" name="phone_number" id="phone_number" placeholder="숫자 11자리 입력"
+                        <td><input type="number" name="phone_number" id="phone_number" placeholder="휴대전화번호(숫자 11자리 입력)"
                                    onKeyup="checkPhone()"/></td>
                     </tr>
                     <tr>
-                        <th scope="row">주소</th>
-                        <td>
+                        <td><div class="wrap">
                             <input type="text" id="postcode" name="postcode" placeholder="우편번호">
-                            <input type="button" onclick="daumPostcode()" value="우편번호 찾기"><br>
+                            <button onclick="daumPostcode()">우편번호찾기</button></div>
                             <input type="text" id="address" name="address" placeholder="도로명주소">
                             <input type="text" id="jibunAddress" name="jibunAddress" placeholder="지번주소">
                             <span id="guide" style="color:#999;display:none"></span>
@@ -71,13 +69,12 @@
                 </table>
                 <p class="btn_set">
                     <button type="submit" class="btns btn_st2">가입</button>
-                    <button type="button" class="btns btn_bdr2" onclick="userReset();">리셋</button>
+                    <button type="reset" class="btns btn_bdr2" onclick="location.href='/signup'">리셋</button>
                 </p>
                 <p id="errorMessage" class="errorMessage"></p>
             </form>
-
         </div>
-    </div>
+        </div>
 </th:block>
 
 <th:block layout:fragment="script">
@@ -85,6 +82,115 @@
         .hide {
             display: none;
         }
+
+.login-page {
+  width: 360px;
+  padding: 8% 0 0;
+  margin: auto;
+}
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+margin-top: 70px; /* 원하는 크기로 조절 */
+
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.form input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.form button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #31304D;
+  border: 0;
+    margin: 0 0 15px;
+
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  width:40%;
+}
+.form button:hover,.form button:active,.form button:focus {
+  background: #7C81AD;
+}
+.form .message {
+  margin: 15px 0 0;
+  color: #b3b3b3;
+  font-size: 12px;
+}
+.form .message a {
+  color: #31304D;
+  text-decoration: none;
+}
+.form .register-form {
+  display: none;
+}
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 300px;
+  margin: 0 auto;
+}
+.container:before, .container:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.container .info {
+  margin: 50px auto;
+  text-align: center;
+}
+.container .info h1 {
+  margin: 0 0 15px;
+  padding: 0;
+  font-size: 36px;
+  font-weight: 300;
+  color: #1a1a1a;
+}
+.container .info span {
+  color: #4d4d4d;
+  font-size: 12px;
+}
+.container .info span a {
+  color: #000000;
+  text-decoration: none;
+}
+.container .info span .fa {
+  color: #EF3B3A;
+}
+body {
+  background: linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
+  font-family: "Roboto", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+    .wrap{
+    display:flex;
+      align-items: center; /* 수직 중앙 정렬 */
+
+}
+    .success-message, .failure-message, .failure-message2, .strongPassword-message, .mismatch-message{
+    font-size:10pt;
+    color:red;
+    }
+
     </style>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
@@ -122,7 +228,7 @@
                         extraRoadAddr = ' (' + extraRoadAddr + ')';
                     }
 
-                    document.getElementById('postcode').value = data.zonecode;
+                    document.getElementById("postcode").value = data.zonecode;
                     document.getElementById("address").value = roadAddr;
                     document.getElementById("jibunAddress").value = data.jibunAddress;
 
@@ -133,13 +239,6 @@
                     }
                 }
             }).open({    autoClose: true //기본값 true
-            });
-        }
-
-        function userReset() {
-            var inputElements = document.querySelectorAll('input');
-            inputElements.forEach(function (input) {
-                input.value = "";
             });
         }
 
