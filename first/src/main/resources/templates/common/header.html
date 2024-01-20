@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8"/>
+    <div th:fragment="header" th:class="page-header">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+        :root {
+          --bgcolor: linear-gradient(to right, rgba(22, 26, 48, 0.9), rgba(49, 48, 77, 0.9));
+        }
+
+        * {
+          font-family: 'Roboto', sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+
+        .page-header {
+          background-image: var(--bgcolor);
+          padding: 1.5rem;
+          padding-left:1rem;
+          padding-right:1rem;
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .logo {
+          color: white;
+          font-weight: bold;
+          font-style: italic;
+          align-self: center;
+          padding-left: 50px;
+          font-size: 1.8rem;
+        }
+
+        .nav-bar {
+          margin: auto;
+        }
+
+        .nav-bar a {
+          color: rgba(255, 255, 255, 0.8);
+          padding: 1.5rem;
+          cursor: pointer;
+          text-decoration: none;
+          font-size: 0.8rem;
+          text-align:left;
+        }
+
+        .menu-icon {
+          color: white;
+          cursor: pointer;
+          display: none;
+        }
+
+        .login-btn, .logout-btn {
+          align-items: center;
+          background-color: rgba(0, 0, 0, 0.5);
+          border-radius: 10px;
+          border: 1px solid white;
+          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.22);
+          display: flex;
+          padding:10px;
+          justify-content: center;
+          position: relative;
+          width: 100px;
+          font-size: 0.8rem;
+          color: rgba(255, 255, 255, 0.8);
+          transition: opacity 300ms;
+          user-select: none;
+          -moz-user-select: none;
+
+        }
+        .login-btn:hover,.login-btn:active,.login-btn:focus,.logout-btn:hover,.logout-btn:active,.logout-btn:focus {
+          background: #7C81AD;
+        }
+
+            .header-right{
+            margin-right:100px;
+    </style>
+    <div class="logo">
+        <p>FIRST</p>
+    </div>
+    <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
+        <i class="fa fa-bars"></i>
+    </a>
+
+    <div id="navigation-bar" class="nav-bar">
+            <a href="/">
+                <i class='fa-solid fa-house' style='color:#ffffff'></i></a>
+                    <a>⎮</a>
+        <a href="/boardlist">BOARD1</a>
+        <a>⎮</a>
+        <a href="#">BOARD2</a>
+        <a>⎮</a>
+        <a href="#">BOARD3</a>
+    </div>
+        <div th:if="${loginUser == null}">
+            <div class="header-right"><button class="login-btn" onclick="location.href='/login'">SIGN UP</button></div>
+        </div>
+        <div th:if="${loginUser != null}">
+            <div class="header-right"><button class="logout-btn" onclick="location.href='/logout'">LOGOUT</button></div>
+        </div>
+</div>
+</html>
