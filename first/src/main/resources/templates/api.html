@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{common/default_layout}">
+<meta charset="UTF-8">
+
+<th:block layout:fragment="content">
+
+<h1>API Data</h1>
+    <p style="font-weight: bold; font-size:14pt;">X58 Y126 신정동 API</p>
+    <p>날짜: <span th:text="${api[0]}"></span></p>
+    <p>시간: <span th:text="${api[1]}"></span></p>
+    <p>날씨: <span th:text="${api[2]}"></span></p>
+    <p>기온: <span th:text="${api[3]}+'도'"></span></p>
+    <p>습도: <span th:text="${api[4]}+'%'"></span></p>
+</th:block>

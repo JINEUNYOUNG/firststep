@@ -78,8 +78,9 @@
           background: #7C81AD;
         }
 
-            .header-right{
-            margin-right:100px;
+            .header-right {
+                margin-right: 100px;
+            }
     </style>
     <div class="logo">
         <p>FIRST</p>
@@ -92,11 +93,11 @@
             <a href="/">
                 <i class='fa-solid fa-house' style='color:#ffffff'></i></a>
                     <a>⎮</a>
-        <a href="/boardlist">BOARD1</a>
+        <a href="/boardlist?num=1&page=1">BOARD1</a>
         <a>⎮</a>
-        <a href="#">BOARD2</a>
+        <a href="/boardlist?num=2&page=1">BOARD2</a>
         <a>⎮</a>
-        <a href="#">BOARD3</a>
+        <a href="/boardlist?num=3&page=1">BOARD3</a>
     </div>
         <div th:if="${loginUser == null}">
             <div class="header-right"><button class="login-btn" onclick="location.href='/login'">SIGN UP</button></div>

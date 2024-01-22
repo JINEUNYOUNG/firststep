@@ -1,10 +1,9 @@
 package fullstack.first.web;
 
+import fullstack.first.service.BoardService;
 import fullstack.first.service.LoginService;
 import fullstack.first.service.SignupService;
-import fullstack.first.vo.LoginForm;
-import fullstack.first.vo.SignForm;
-import fullstack.first.vo.User;
+import fullstack.first.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
@@ -24,6 +25,8 @@ public class MainController {
     public LoginService loginService;
     @Autowired
     public SignupService signupService;
+    @Autowired
+    public BoardService boardService;
 
 
     //메인. 세션에 로그인정보가 있으면 모델에 넣어준다.
@@ -58,7 +61,6 @@ public class MainController {
         // 로그인 성공 처리
         HttpSession session = request.getSession();
         session.setAttribute(SessionConstants.LOGIN_USER, loginUser);   // 세션에 로그인 회원 정보 보관
-
         return "redirect:/";
     }
 
@@ -72,30 +74,58 @@ public class MainController {
 
         return "redirect:/";
     }
+
     @GetMapping("signup")
     public String signup() throws Exception{
         return "signup";
     }
+
     @PostMapping("signup")
     public String signupUser(@ModelAttribute("signForm") SignForm signForm,
                                          Model model) throws Exception{
-
-
-        System.out.println(signForm.toString());
-
-
+        //System.out.println(signForm.toString());
         signupService.signup(signForm);
-
         return "redirect:/";
     }
+
+    //1페이지 분량의 list를 담아 반환
     @GetMapping("boardlist")
-    public String boardlist() throws Exception{
+    public String boardlist(Model model, @RequestParam(name = "num", required = false) int num,
+                            @RequestParam(name = "page", required = false, defaultValue = "1") int page) throws Exception{
+        //게시판종류+페이지번호를 받아 리스트반환
+        List<ListForm> boardlist = boardService.getList(num,page);
+        if (boardlist != null) {
+            model.addAttribute("boardlist", boardlist);
+        } else {
+            model.addAttribute("boardlist",new ArrayList<Board>());
+        }
+        //페이지정보 반환
+        int totalPage = boardService.getTotalPage(num);
+        model.addAttribute("totalPage", totalPage);
+        model.addAttribute("currentPage", page);
         return "boardlist";
     }
 
     @GetMapping("board")
     public String board() throws Exception{
+
         return "board";
+    }
+    @GetMapping("write")
+    public String write(Model model, HttpSession session) throws Exception{
+        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+        model.addAttribute("loginUser",loginUser);
+        return "write";
+    }
+
+    @Autowired
+    private OpenApi openApi;
+
+    @GetMapping("api")
+    public String openApi(Model model){
+        String[] api = openApi.fetchDataAndPrint();
+        model.addAttribute("api",api);
+        return "api";
     }
 
 }

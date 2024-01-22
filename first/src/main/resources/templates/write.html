@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{common/default_layout}">
+<meta charset="UTF-8">
+<th:block layout:fragment="script">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <style>
+        *{
+            font-family: "Roboto", sans-serif;
+        }
+        body {
+            background: linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
+            margin: 0;
+            padding: 0;
+        }
+
+        .content-container {
+            width: 50%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #31304D;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #7C81AD;
+        }
+        .dropdown{
+            border : none;
+            background: #31304D;
+            color:white;
+            border-radius:5px;
+            padding:10px;
+            margin-bottom:15px;
+        }
+    </style>
+    <script>
+        function fileDragEnter(event){
+            event.stopPropagation();
+            event.preventDefault();
+            $(this).css('background-color','#E3F2FC');
+        }
+        function fileDragLeave(event){
+            event.stopPropagation();
+            event.preventDefault();
+            $(this).css('background-color','#E3F2FC');
+        }
+        function fileDragOver(event){
+            event.stopPropagation();
+            event.preventDefault();
+            $(this).css('background-color','#E3F2FC');
+        }
+        function fileDrop(ev){
+            ev.preventDefault();
+            $(this).css('background-color','#FFFFFF');
+            var files = ev.target.files||ev.dataTransfer.files;
+            var strHtml="";
+            $("#files").html("");
+            $("input[type='file']")
+                .prop("files",files)
+                .closest("form")
+            for(var i=0;i<files.length;i++){
+                strHtml += "＃ " + (i + 1) + " : " + files[i].name +"<br/>";
+                var reader = new FileReader();
+                reader.readAsDataURL(files[i]);
+                reader.onload = function (e) {
+                }
+            }
+            $("#file-div").html(strHtml);
+            if(files != null){
+                if(files.length < 1){
+                    alert("폴더 업로드 불가");
+                    return;
+                }
+                //selectFile(no,cnt,files)
+            }else{
+                alert("ERROR");
+            }
+        }
+
+    </script>
+
+</th:block>
+<th:block layout:fragment="content">
+    <div class="content-container">
+        <form>
+            <select class="dropdown" id="board_type" name="board_type" required>
+                <option value="1">게시판 1</option>
+                <option value="2">게시판 2</option>
+                <option value="3">게시판 3</option>
+            </select>
+            <input type="file" name="file[]" id="file" multiple style="display:none" onchange="fileDrop(event)">
+            <div style="display: flex">
+            <div style="width:70%;border:2px dashed #f0f0f0;padding:40px; font-size:10pt; overflow-y:scroll" id="file-div" onclick="$('#file').click();" ondragenter="fileDragEnter(event)" ondragleave="fileDragLeave(event)" ondragover="fileDragOver(event)" ondrop="fileDrop(event)">
+                드래그해서 파일첨부를 하거나 또는 클릭해서 파일 첨부 하시길 바랍니다.
+            </div>
+                <div style="font-size:10pt">&nbsp;&nbsp;&nbsp;다운로드권한 :
+                    <select class="dropdown" id="download_lev" name="download_lev" style="margin-top:10px; margin-left:5px;"required>
+                        <option value="0">관리자</option>
+                        <option value="1">작성자</option>
+                        <option value="2">유저</option>
+                        <option value="3">전체</option>
+                    </select>
+                </div>
+            </div><br/>
+
+
+            <input type="text" id="title" name="title" placeholder="제목" required/>
+            <input type="text" id="username" name="username" th:value="${loginUser.id}" readonly/>
+            <textarea id="content" name="content" rows="6" placeholder="내용" required></textarea>
+            <button type="submit">글쓰기</button>
+        </form>
+    </div>
+</th:block>
+</html>

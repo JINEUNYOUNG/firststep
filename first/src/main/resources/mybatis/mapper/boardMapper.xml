@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fullstack.first.mapper.boardMapper">
+
+    <resultMap id="boardResultMap" type="fullstack.first.vo.ListForm">
+        <id property="board_idx" column="board_idx" />
+        <result property="title" column="title" />
+        <result property="content" column="content" />
+        <result property="id" column="id" />
+        <result property="board_type" column="board_type" />
+        <result property="board_reg_date" column="board_reg_date" />
+        <result property="board_view" column="board_view" />
+        <result property="likes" column="likes" />
+        <result property="notice" column="notice" />
+    </resultMap>
+
+    <!-- boardtype에 맞는 1페이지 분량의 리스트 반환 -->
+    <select id="getList" resultMap="boardResultMap">
+        SELECT b.*, (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes, c.id
+        FROM board b
+                 LEFT JOIN user c ON b.user_idx = c.user_idx
+        WHERE board_type = #{num}
+        ORDER BY board_idx DESC
+            LIMIT 10 OFFSET #{page};
+    </select>
+
+    <!-- 해당 boardtype의 게시물 총 갯수 -->
+    <select id="getTotalPage" resultType="int">
+        SELECT COUNT(*) AS total FROM board WHERE board_type = #{num};
+    </select>
+
+
+
+</mapper>

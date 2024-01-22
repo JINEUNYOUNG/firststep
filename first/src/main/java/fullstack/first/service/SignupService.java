@@ -14,8 +14,6 @@ public class SignupService {
     public userMapper mapper;
 
     public void signup(SignForm signForm) throws Exception {
-        System.out.println("durl");
         mapper.signup(signForm);
-        System.out.println("durl");
     }
 }
