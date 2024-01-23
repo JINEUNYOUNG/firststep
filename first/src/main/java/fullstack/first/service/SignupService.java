@@ -16,4 +16,11 @@ public class SignupService {
     public void signup(SignForm signForm) throws Exception {
         mapper.signup(signForm);
     }
+    public boolean checkDuplicate(String loginId) throws Exception{
+        int count = mapper.checkDuplicate(loginId);
+        // 0==true==중복이 아님
+        // false!=0==중복
+        return count == 0;
+
+    }
 }

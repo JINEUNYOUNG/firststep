@@ -24,11 +24,42 @@
             LIMIT 10 OFFSET #{page};
     </select>
 
+    <!-- boardtype에 맞는 최대 3개까지 공지 -->
+    <select id="getNotice" resultMap="boardResultMap">
+        SELECT b.*, (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes, c.id
+        FROM board b
+                 LEFT JOIN user c ON b.user_idx = c.user_idx
+        WHERE board_type = #{num} and notice = 1
+        ORDER BY board_idx DESC
+        LIMIT 3;
+    </select>
+
     <!-- 해당 boardtype의 게시물 총 갯수 -->
     <select id="getTotalPage" resultType="int">
         SELECT COUNT(*) AS total FROM board WHERE board_type = #{num};
     </select>
 
+    <!-- idx로 해당게시물 정보 가져오기 -->
+    <select id="findBoardByIdx" resultMap="boardResultMap">
+        SELECT b.*, (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes, c.id
+        FROM board b
+                 LEFT JOIN user c ON b.user_idx = c.user_idx
+        WHERE board_idx = #{idx};
+    </select>
 
+    <!-- 조회수+1 -->
+    <update id="increaseView">
+        UPDATE board SET board_view = board_view+1 WHERE board_idx = #{idx};
+    </update>
+
+    <!-- 좋아요+1 -->
+    <update id="increaseLike">
+        INSERT INTO likes (board_idx, user_idx) VALUES (#{board_idx}, #{user_idx});
+    </update>
+
+    <!-- 이미 좋아요했었는지? -->
+    <select id="checkLike" resultType="int">
+        SELECT COUNT(*) FROM likes WHERE board_idx = #{board_idx} and user_idx = #{user_idx};
+    </select>
 
 </mapper>

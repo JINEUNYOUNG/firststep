@@ -94,10 +94,16 @@ public class MainController {
                             @RequestParam(name = "page", required = false, defaultValue = "1") int page) throws Exception{
         //게시판종류+페이지번호를 받아 리스트반환
         List<ListForm> boardlist = boardService.getList(num,page);
+        List<ListForm> noticelist = boardService.getNotice(num);
         if (boardlist != null) {
             model.addAttribute("boardlist", boardlist);
         } else {
             model.addAttribute("boardlist",new ArrayList<Board>());
+        }
+        if (noticelist != null) {
+            model.addAttribute("noticelist", noticelist);
+        } else {
+            model.addAttribute("noticelist",new ArrayList<Board>());
         }
         //페이지정보 반환
         int totalPage = boardService.getTotalPage(num);
@@ -107,16 +113,25 @@ public class MainController {
     }
 
     @GetMapping("board")
-    public String board() throws Exception{
+    public String board(HttpSession session, Model model, @RequestParam(name = "idx", required = false) int idx) throws Exception{
+        ListForm singleBoard = boardService.findBoardByIdx(idx);
+        model.addAttribute("board", singleBoard);
+
+        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+        model.addAttribute("loginUser", loginUser);
+
 
         return "board";
     }
+
     @GetMapping("write")
-    public String write(Model model, HttpSession session) throws Exception{
+    public String write(HttpSession session, Model model) throws Exception {
         User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
         model.addAttribute("loginUser",loginUser);
         return "write";
     }
+
+
 
     @Autowired
     private OpenApi openApi;

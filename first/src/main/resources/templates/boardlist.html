@@ -3,18 +3,11 @@
 <meta charset="UTF-8">
 <head>
 <style>
-.list-form{
-          box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 
-}
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-section.notice {
-  padding: 80px 0;
-}
-
 #board-search .search-window {
   padding: 15px 0;
   background-color: #f9f7f9;
@@ -51,9 +44,6 @@ section.notice {
 .board-table {
   font-size: 13px;
   width: 100%;
-margin-top:100px;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
 }
 
 .board-table a {
@@ -164,7 +154,7 @@ margin-top:100px;
   clear: both;
 }
 .container {
-  width: 1100px;
+  width: 60%;
   margin: 0 auto;
 }
 .blind {
@@ -175,9 +165,9 @@ margin-top:100px;
   width: 1px;
   height: 1px;
 }
-    .title {
-    background:linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
-    }
+.title {
+background:linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
+}
 .board-table ul.pagination {
     list-style: none;
     display: inline-block; /* 추가된 부분 */
@@ -204,7 +194,27 @@ margin-top:100px;
     user-select: none;
     -moz-user-select: none;
 }
+
+.notice{
+    background: #EEF5FF;
+    font-weight: bold;
+}
 </style>
+    <script>
+        function checkAuthority(){
+            axios.get('/checkAuthority')
+                .then(function (response){
+                    console.log(response.data);
+                    window.location.href = '/write';
+                })
+                .catch(function (error){
+                    console.log(error.response.data);
+                    alert('로그인해주세요.');
+                    window.location.href= '/login';
+                })
+        }
+
+    </script>
 </head>
 <th:block layout:fragment="content">
         <div id="board-list">
@@ -212,13 +222,14 @@ margin-top:100px;
                 <table class="board-table">
                 <h2 th:text="'BOARD'+${param.num}" style="padding-top:80px;"/>
                     <thead>
-                    <tr style="border:none;">
+                    <tr style="border:none ;">
                         <th colspan="5"></th>
                         <th>
-                            <button class="btn" onclick="location.href='/write'">WRITE</button>
+<!--                            <button class="btn" onclick="location.href='/write'">WRITE</button>-->
+                            <button class="btn" onclick="checkAuthority()">WRITE</button>
                         </th>
                     </tr>
-                    <tr class="title">
+                    <tr class="title" >
                         <th scope="col" class="th-num">번호</th>
                         <th scope="col" class="th-title">제목</th>
                         <th scope="col" class="th-id">ID</th>
@@ -227,16 +238,23 @@ margin-top:100px;
                         <th scope="col" class="th-likes">좋아요수</th>
                     </tr>
                     </thead>
+
                     <tbody>
-                    <tr th:each="board : ${boardlist}">
+
+                    <!--공지사항-->
+                    <tr th:class="notice" th:each="notice : ${noticelist}" th:onclick="|location.href='@{/board(idx=${notice.board_idx})}'|">
+                        <td>🚩</td>
+                        <th th:text="'[공지]   '+${notice.title}"></th>
+                        <td th:text="${notice.id}"></td>
+                        <td th:text="${#dates.format(notice.board_reg_date, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${notice.board_view}"></td>
+                        <td th:text="${notice.likes}"></td>
+                    </tr>
+
+                    <!--일반-->
+                    <tr th:each="board : ${boardlist}" th:onclick="|location.href='@{/board(idx=${board.board_idx})}'|">
                         <td th:text="${board.board_idx}"></td>
-                        <!--공지사항인경우 th-->
-                        <div th:if="${board.notice}">
-                            <th th:text="'[공지] '+${board.title}" style="color:dodgerblue"></th>
-                        </div>
-                        <div th:if="${!board.notice}">
-                            <td th:text="${board.title}"></td>
-                        </div>
+                        <td th:text="${board.title}"></td>
                         <td th:text="${board.id}"></td>
                         <td th:text="${#dates.format(board.board_reg_date, 'yyyy-MM-dd HH:mm')}"></td>
                         <td th:text="${board.board_view}"></td>

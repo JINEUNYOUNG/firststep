@@ -27,6 +27,7 @@
                     <td class="success-message hide">사용할 수 있는 아이디입니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
                     <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
                     <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
+                    <td class="failure-message3 hide">중복된 아이디입니다</td>
                     </tr>
                     <tr>
 
@@ -78,6 +79,8 @@
 </th:block>
 
 <th:block layout:fragment="script">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     <style>
         .hide {
             display: none;
@@ -186,13 +189,12 @@ body {
       align-items: center; /* 수직 중앙 정렬 */
 
 }
-    .success-message, .failure-message, .failure-message2, .strongPassword-message, .mismatch-message{
+    .success-message, .failure-message, .failure-message2, .failure-message3,.strongPassword-message, .mismatch-message{
     font-size:10pt;
     color:red;
     }
 
     </style>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
 
 
@@ -244,17 +246,21 @@ body {
 
         function checkDuplicate(loginId) {
             let successMessageElement = document.querySelector('.success-message');
+            let elFailureMessageThree = document.querySelector('.failure-message3');
             if (!successMessageElement.classList.contains('hide')) {
-                axios.get('/idcheck', {
+                axios.get('/checkDuplicate', {
                     params: {
                         loginId: loginId
                     }
                 })
                     .then(function (response) {
                         console.log(response.data);
+                        successMessageElement.classList.add('hide');
                     })
                     .catch(function (error) {
                         console.error("Error:", error);
+                        successMessageElement.classList.add('hide');
+                        elFailureMessageThree.classList.remove('hide');
                     });
             }
         }
@@ -264,6 +270,7 @@ body {
             let elSuccessMessage = document.querySelector('.success-message');
             let elFailureMessage = document.querySelector('.failure-message');
             let elFailureMessageTwo = document.querySelector('.failure-message2');
+            let elFailureMessageThree = document.querySelector('.failure-message3');
 
 
             if (elInputId.value.length !== 0) {
@@ -271,17 +278,20 @@ body {
                 if (onlyNumberAndEnglish(elInputId.value) === false) {
                     elSuccessMessage.classList.add('hide');
                     elFailureMessage.classList.add('hide');
+                    elFailureMessageThree.classList.add('hide');
                     elFailureMessageTwo.classList.remove('hide');
                 }
                 // 글자 수가 4~12글자가 아닐 경우
                 else if (idLength(elInputId.value) === false) {
                     elSuccessMessage.classList.add('hide');
+                    elFailureMessageThree.classList.add('hide');
                     elFailureMessage.classList.remove('hide');
                     elFailureMessageTwo.classList.add('hide');
                 }
                 // 조건을 모두 만족할 경우
                 else if (idLength(elInputId.value) || onlyNumberAndEnglish(elInputId.value)) {
                     elSuccessMessage.classList.remove('hide');
+                    elFailureMessageThree.classList.add('hide');
                     elFailureMessage.classList.add('hide');
                     elFailureMessageTwo.classList.add('hide');
                 }
@@ -289,6 +299,7 @@ body {
             // 값을 입력하지 않은 경우 (지웠을 때)
             else {
                 elSuccessMessage.classList.add('hide');
+                elFailureMessageThree.classList.add('hide');
                 elFailureMessage.classList.add('hide');
                 elFailureMessageTwo.classList.add('hide');
             }

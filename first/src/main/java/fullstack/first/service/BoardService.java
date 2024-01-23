@@ -23,9 +23,31 @@ public class BoardService {
         page = (page-1) * 10;
         return mapper.getList(num, page);
     }
+    public List<ListForm> getNotice(int num) throws Exception {
+        return mapper.getNotice(num);
+    }
 
     public int getTotalPage(int num) throws Exception{
         return (mapper.getTotalPage(num)-1)/10+1;
+    }
+
+    public ListForm findBoardByIdx(int idx) throws Exception{
+        mapper.increaseView(idx); //조회수증가
+        return mapper.findBoardByIdx(idx);
+    }
+
+    public boolean increaseLike(int user_idx, int board_idx) throws Exception {
+        //좋아요 안 한게 맞는지?
+        if (mapper.checkLike(user_idx, board_idx) != 0) {
+            return false;
+        } else {
+            int affectedRows = mapper.increaseLike(user_idx, board_idx);
+            if (affectedRows > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 }

@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface userMapper {
     User findById(String id) throws Exception;
     void signup(SignForm signForm) throws Exception;
+    int checkDuplicate(String loginId) throws Exception;
 }

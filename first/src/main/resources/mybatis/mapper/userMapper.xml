@@ -24,6 +24,10 @@
         INSERT INTO user (id, password,user_name,resident_registration_number,phone_number,address) VALUES (#{id},  sha2(#{password},256),#{user_name}, sha2(#{resident_registration_number},256),#{phone_number},#{address});
     </insert>
 
+    <!-- 아이디 중복확인 -->
+    <select id="checkDuplicate" resultType="int">
+        SELECT count(*) FROM user WHERE id = #{id};
+    </select>
 
 
 </mapper>
