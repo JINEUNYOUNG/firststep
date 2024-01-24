@@ -15,7 +15,8 @@ public interface boardMapper {
     int getTotalPage(@Param("num") int num) throws Exception;
     ListForm findBoardByIdx(@Param("idx") int idx) throws Exception;
     void increaseView(@Param("idx") int idx) throws Exception;
-    int increaseLike(@Param("user_idx") int user_idx, @Param("board_idx") int board_idx) throws Exception;
-    int checkLike(@Param("user_idx") int user_idx, @Param("board_idx") int board_idx) throws Exception;
-
+    int getBoardWriter(@Param("board_idx") int board_idx) throws Exception;
+    void deleteBoard(@Param("board_idx") int board_idx) throws Exception;
+    void setNotice(@Param("board_idx") int board_idx) throws Exception;
+    void cancelNotice(@Param("board_idx") int board_idx) throws Exception;
 }

@@ -24,7 +24,7 @@
                             </button></td>
                     </tr>
                     <tr>
-                    <td class="success-message hide">사용할 수 있는 아이디입니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
+                    <td class="success-message hide">중복확인해주시기 바랍니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
                     <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
                     <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
                     <td class="failure-message3 hide">중복된 아이디입니다</td>
@@ -108,8 +108,9 @@
   outline: 0;
   background: #f2f2f2;
   width: 100%;
+  height: 50px;
+    margin-top:10px;
   border: 0;
-  margin: 0 0 15px;
   padding: 15px;
   box-sizing: border-box;
   font-size: 14px;
@@ -119,16 +120,15 @@
   text-transform: uppercase;
   outline: 0;
   background: #31304D;
-  border: 0;
-    margin: 0 0 15px;
+    margin-top:10px;
 
-  padding: 15px;
+    height: 50px;
+
+    border: 0;
   color: #FFFFFF;
-  font-size: 14px;
-  -webkit-transition: all 0.3 ease;
-  transition: all 0.3 ease;
+  font-size: 13px;
   cursor: pointer;
-  width:40%;
+  width:150px;
 }
 .form button:hover,.form button:active,.form button:focus {
   background: #7C81AD;
@@ -189,7 +189,7 @@ body {
       align-items: center; /* 수직 중앙 정렬 */
 
 }
-    .success-message, .failure-message, .failure-message2, .failure-message3,.strongPassword-message, .mismatch-message{
+    .success-message, .failure-message, .failure-message2, .failure-message3,.strongPassword-message, .mismatch-message, .errorMessage{
     font-size:10pt;
     color:red;
     }
@@ -215,6 +215,8 @@ body {
         }
 
         function daumPostcode() {
+            validateForm.submitButtonClicked = true;
+
             new daum.Postcode({
                 oncomplete: function (data) {
                     var roadAddr = data.address;
@@ -311,9 +313,9 @@ body {
 
             if (elInputPassword.value.length !== 0) {
                 if (strongPassword(elInputPassword.value)) {
-                    elStrongPasswordMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+                    elStrongPasswordMessage.classList.add('hide');
                 } else {
-                    elStrongPasswordMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
+                    elStrongPasswordMessage.classList.remove('hide');
                 }
             } else {
                 elStrongPasswordMessage.classList.add('hide');
@@ -328,12 +330,12 @@ body {
 
             if (elInputPasswordRetype.value.length !== 0) {
                 if (isMatch(elInputPassword.value, elInputPasswordRetype.value)) {
-                    elMismatchMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+                    elMismatchMessage.classList.add('hide');
                 } else {
-                    elMismatchMessage.classList.remove('hide'); // 실패 메시지가 보여야 함
+                    elMismatchMessage.classList.remove('hide');
                 }
             } else {
-                elMismatchMessage.classList.add('hide'); // 실패 메시지가 가려져야 함
+                elMismatchMessage.classList.add('hide');
             }
         }
 
@@ -346,24 +348,44 @@ body {
             let elInputPhone = document.getElementById('phone_number');
             elInputPhone.value = elInputPhone.value.replace(/[^0-9]/g, '');
         }
-
+        function isElementHidden(element) {
+            return element.classList.contains('hide');
+        }
         function validateForm() {
-            // input 다 채워져있는지?
+            //주소선택시 전송되는 일 막기
+            if (validateForm.submitButtonClicked) {
+                validateForm.submitButtonClicked = false;
+                return false;
+            }
+
+            //1. input 다 채워져 있는지?
             let hasError = false;
             let inputElements = document.querySelectorAll('input');
             let errorMessage = document.getElementById('errorMessage');
             for (let i = 0; i < inputElements.length; i++) {
                 if (inputElements[i].value.trim() === '') {
                     hasError = true;
-                    console.log("덜차있음");
                     break;
                 }
             }
-            if (hasError) {
-                errorMessage.innerHTML = '올바르게 기입해주세요.';
-                return false; // 함수 전체에서 빠져나가기
+            //2.오류메세지가 떠있진 않은지?
+            let elSuccessMessage = document.querySelector('.success-message');
+            let elFailureMessage = document.querySelector('.failure-message');
+            let elFailureMessageTwo = document.querySelector('.failure-message2');
+            let elFailureMessageThree = document.querySelector('.failure-message3');
+            let elMismatchMessage = document.querySelector('.mismatch-message');
+            let elStrongPasswordMessage = document.querySelector('.strongPassword-message');
+            if (!isElementHidden(elSuccessMessage) || !isElementHidden(elFailureMessage) || !isElementHidden(elFailureMessageTwo) || !isElementHidden(elFailureMessageThree) || !isElementHidden(elMismatchMessage) || !isElementHidden(elStrongPasswordMessage)) {
+                hasError = true;
             }
-            return true;
+            //문제가 없다! 하면 true반환.
+            if (!hasError) {
+                errorMessage.innerHTML = ' ';
+                return true;
+            } else {
+                errorMessage.innerHTML = '올바르게 기입해주세요.';
+                return false;
+            }
         }
 
 

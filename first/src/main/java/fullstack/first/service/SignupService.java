@@ -18,9 +18,7 @@ public class SignupService {
     }
     public boolean checkDuplicate(String loginId) throws Exception{
         int count = mapper.checkDuplicate(loginId);
-        // 0==true==중복이 아님
-        // false!=0==중복
-        return count == 0;
+        return count == 0;         // 0==true==중복이 아님
 
     }
 }

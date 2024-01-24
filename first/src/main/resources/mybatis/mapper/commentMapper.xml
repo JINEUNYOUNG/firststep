@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fullstack.first.mapper.commentMapper">
+
+    <resultMap id="commentResultMap" type="fullstack.first.vo.CommentForm">
+        <id property="comment_idx" column="comment_idx" />
+        <result property="id" column="id" />
+        <result property="board_idx" column="board_idx" />
+        <result property="comment_content" column="comment_content" />
+        <result property="comment_reg_date" column="comment_reg_date" />
+    </resultMap>
+
+    <insert id = "addComment">
+        INSERT INTO comment(board_idx, comment_content, user_idx) VALUES (#{board_idx}, #{comment_content}, #{user_idx});
+    </insert>
+
+    <select id = "findCommentByIdx" resultMap="commentResultMap">
+        SELECT c.*, u.id
+        FROM comment c
+                 JOIN user u ON u.user_idx = c.user_idx
+        WHERE c.board_idx = #{idx}
+        ORDER BY comment_idx;
+    </select>
+
+</mapper>

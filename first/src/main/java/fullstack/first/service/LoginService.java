@@ -26,8 +26,7 @@ public class LoginService {
     }
 
     //비밀번호 해시(SHA256)거는 메소드
-    private static String hashPassword(String password) {
-        try {
+    private static String hashPassword(String password) throws Exception {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes("UTF-8"));
             StringBuilder sb = new StringBuilder();
@@ -35,8 +34,5 @@ public class LoginService {
                 sb.append(String.format("%02x", b));
             }
             return sb.toString();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

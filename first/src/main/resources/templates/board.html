@@ -1,297 +1,424 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{common/default_layout}">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{common/default_layout}">
 <meta charset="UTF-8">
-<head>
-    <th:block layout:fragment="script">
-
+<th:block layout:fragment="script">
     <style>
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            padding: 40px;
 
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-    padding:40px;
+        }
 
-}
-#board-search .search-window {
-  padding: 15px 0;
-  background-color: #f9f7f9;
-}
-#board-search .search-window .search-wrap {
-  position: relative;
-  margin: 0 auto;
-  width: 80%;
-  max-width: 564px;
-}
-#board-search .search-window .search-wrap input {
-  height: 40px;
-  width: 100%;
-  font-size: 14px;
-  padding: 7px 14px;
-  border: 1px solid #ccc;
-}
-#board-search .search-window .search-wrap input:focus {
-  border-color: #333;
-  outline: 0;
-  border-width: 1px;
-}
-#board-search .search-window .search-wrap .btn {
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 108px;
-  font-size: 16px;
-}
+        #board-search .search-window {
+            padding: 15px 0;
+            background-color: #f9f7f9;
+        }
 
-.board-table {
-    margin-top:80px;
-  font-size: 13px;
-  width: 100%;
-}
+        #board-search .search-window .search-wrap {
+            position: relative;
+            margin: 0 auto;
+            width: 80%;
+            max-width: 564px;
+        }
 
-.board-table a {
-  color: #333;
-  display: inline-block;
-  line-height: 1.4;
-  word-break: break-all;
-  vertical-align: middle;
-}
-.board-table a:hover {
-  text-decoration: underline;
-}
-.board-table th {
-  text-align: left;
-    font-weight: normal;
-    width:40%;
-}
-.board-table .th-num,.board-table .th-view,.board-table .th-likes {
-  width: 100px;
-}
+        #board-search .search-window .search-wrap input {
+            height: 40px;
+            width: 100%;
+            font-size: 14px;
+            padding: 7px 14px;
+            border: 1px solid #ccc;
+        }
 
-.board-table .th-date {
-  width: 150px;
-}
-.board-table .th-id {
-  width: 150px;
-}
+        #board-search .search-window .search-wrap input:focus {
+            border-color: #333;
+            outline: 0;
+            border-width: 1px;
+        }
 
-.board-table th, .board-table td {
-  padding: 14px 0;
-}
+        #board-search .search-window .search-wrap .btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 108px;
+            font-size: 16px;
+        }
 
-.board-table tbody td {
-  border-top: 1px solid #e7e7e7;
-}
+        .board-table {
+            margin-top: 80px;
+            font-size: 13px;
+            width: 100%;
+        }
 
-.board-table tbody th {
-  border-top: 1px solid #e7e7e7;
-}
+        .board-table a {
+            color: #333;
+            display: inline-block;
+            line-height: 1.4;
+            word-break: break-all;
+            vertical-align: middle;
+        }
 
-.board-table tbody th p{
-  display: none;
-}
+        .board-table a:hover {
+            text-decoration: underline;
+        }
 
-.btn {
-  display: inline-block;
-  padding: 0 30px;
-  font-size: 15px;
-  font-weight: 400;
-  background: transparent;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
-  cursor: pointer;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  border: 1px solid transparent;
-  text-transform: uppercase;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  -webkit-transition: all 0.3s;
-  -moz-transition: all 0.3s;
-  -ms-transition: all 0.3s;
-  -o-transition: all 0.3s;
-  transition: all 0.3s;
-}
+        .board-table th {
+            text-align: left;
+            font-weight: normal;
+            width: 40%;
+        }
 
-.btn-dark {
-  background: #555;
-  color: #fff;
-}
+        .board-table .th-num, .board-table .th-view, .board-table .th-likes {
+            width: 100px;
+        }
 
-.btn-dark:hover, .btn-dark:focus {
-  background: #373737;
-  border-color: #373737;
-  color: #fff;
-}
+        .board-table .th-date {
+            width: 150px;
+        }
 
-.btn-dark {
-  background: #555;
-  color: #fff;
-}
+        .board-table .th-id {
+            width: 150px;
+        }
 
-.btn-dark:hover, .btn-dark:focus {
-  background: #373737;
-  border-color: #373737;
-  color: #fff;
-}
+        .board-table th, .board-table td {
+            padding: 14px 10px;
+        }
 
-/* reset */
+        .board-table tbody td {
+            border-top: 1px solid #e7e7e7;
+        }
 
-* {
-  list-style: none;
-  text-decoration: none;
-  margin: 0;
-  box-sizing: border-box;
-}
-.clearfix:after {
-  content: '';
-  display: block;
-  clear: both;
-}
-.container {
-  width: 60%;
-  margin: 0 auto;
-}
-.blind {
-  position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  margin: -1px;
-  width: 1px;
-  height: 1px;
-}
-    .title {
-    background:linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
-        font-size:14pt;
-        font-weight: bold;
-    }
-.board-table ul.pagination {
-    list-style: none;
-    display: inline-block; /* 추가된 부분 */
-    margin: 0;
-}
+        .board-table tbody th {
+            border-top: 1px solid #e7e7e7;
+        }
 
-.board-table ul.pagination li {
-    display: inline-block;
-    margin-right: 5px; /* 각 페이지 사이의 간격 조절을 위해 추가된 부분 */
-}
+        .board-table tbody th p {
+            display: none;
+        }
 
-.btn{
-    align-items: center;
-    background-color: #2D3250;
-    border-radius: 10px;
-    display: flex;
-    padding:5px;
-    justify-content: center;
-    position: relative;
-    width: 100px;
-    font-size: 0.8rem;
-    color: white;
-    user-select: none;
-    -moz-user-select: none;
-}
+        .btn {
+            display: inline-block;
+            padding: 0 30px;
+            font-size: 15px;
+            font-weight: 400;
+            background: transparent;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            text-transform: uppercase;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            border-radius: 0;
+            -webkit-transition: all 0.3s;
+            -moz-transition: all 0.3s;
+            -ms-transition: all 0.3s;
+            -o-transition: all 0.3s;
+            transition: all 0.3s;
+        }
 
-.notice{
-    background: #EEF5FF;
-    font-weight: bold;
-}
-.content{
-    height:300px;
 
-}
-.view-like th{
-    text-align: center;
-}
-.buttons {
-    text-align: right !important;
-}
+        /* reset */
 
-.buttons button {
-    display: inline-block;
-    margin-right: 10px; /* 각 버튼 사이의 여백 조절 (원하는 여백 크기로 조정) */
-}
+        * {
+            list-style: none;
+            text-decoration: none;
+            margin: 0;
+            box-sizing: border-box;
+        }
 
-</style>
-        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        .clearfix:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
 
-        <script>
+        .container {
+            width: 60%;
+            margin: 0 auto;
+        }
+
+        .blind {
+            position: absolute;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            margin: -1px;
+            width: 1px;
+            height: 1px;
+        }
+
+        .title {
+            background: linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1));
+            font-size: 14pt;
+            font-weight: bold;
+        }
+
+        .board-table ul.pagination {
+            list-style: none;
+            display: inline-block; /* 추가된 부분 */
+            margin: 0;
+        }
+
+        .board-table ul.pagination li {
+            display: inline-block;
+            margin-right: 5px; /* 각 페이지 사이의 간격 조절을 위해 추가된 부분 */
+        }
+
+        .btn {
+            align-items: center;
+            background-color: #2D3250;
+            border-radius: 10px;
+            display: flex;
+            padding: 5px;
+            justify-content: center;
+            position: relative;
+            width: 100px;
+            font-size: 0.8rem;
+            color: white;
+            user-select: none;
+            -moz-user-select: none;
+        }
+
+        .btn2 {
+            background-color: white;
+            border-color: #2D3250;
+            border-radius: 10px;
+            padding: 5px;
+            justify-content: center;
+            position: relative;
+            width:80px;
+            font-size: 0.8rem;
+            color: #2D3250;
+            user-select: none;
+            -moz-user-select: none;
+        }
+
+        .notice {
+            background: #EEF5FF;
+            font-weight: bold;
+        }
+
+        .content {
+            height: 300px;
+
+        }
+
+        .view-like th {
+            text-align: center;
+        }
+
+        .buttons {
+            text-align: right !important;
+        }
+
+        .buttons button {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .comment-line{
+            padding:5px;
+        }
+        .comment-line i {
+            font-size:13px;
+            color:#2D3250;
+        }
+
+    </style>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+        function setNotice(){
+            var boardidx = document.querySelector('.idx').innerText;
+            axios.get('/setNotice?board_idx='+boardidx)
+                .then(response => {
+                    console.log(response);
+                    alert('공지지정 완료');
+                    location.reload();
+                })
+                .catch(function (error) {
+                    console.log(error.response.data);
+                });
+        }
+        function cancelNotice(){
+            var boardidx = document.querySelector('.idx').innerText;
+            axios.get('/cancelNotice?board_idx='+boardidx)
+                .then(response => {
+                    console.log(response);
+                    alert('공지지정 취소완료');
+                    location.reload();
+                })
+                .catch(function (error) {
+                    console.log(error.response.data);
+                });
+        }
         function increaseLike() {
-            var formData ={
-                "board_idx" : document.querySelector('.idx').innerText
+            var formData = {
+                "board_idx": document.querySelector('.idx').innerText
             };
-            axios.post('/increaseLike',formData)
-                .then(response=>{
+            axios.post('/increaseLike', formData)
+                .then(response => {
                     console.log(response);
                     alert('좋아요 완료');
                     location.reload();
                 })
-                .catch(function(error){
+                .catch(function (error) {
                     console.log(error.response.data);
                     alert('이미 좋아요 한 글입니다.');
                 });
         }
+
+        function deleteBoard() {
+            var boardidx = document.querySelector('.idx').innerText;
+            var notice = document.querySelector('.notice').innerText;
+            var boardtype = document.querySelector('.type').innerText;
+            var user_idx = document.querySelector('.user_idx').innerText;
+            console.log(notice);
+            if (notice && user_idx != 1){
+                alert('공지글은 삭제할 수 없습니다.')
+                return;
+            }
+            if (confirm('정말 삭제하시겠습니까?')) {
+                axios.delete('/deleteBoard?board_idx=' + boardidx)
+                    .then(response => {
+                        console.log(response);
+                        alert('삭제 완료');
+                        const numValue =
+                            window.location.href = '/boardlist?num=' + boardtype;
+
+                    })
+                    .catch(function (error) {
+                        console.log(error.response.data);
+                        alert('삭제권한이 없습니다.');
+                    });
+            } else {
+                alert('삭제 취소');
+            }
+
+        }
+        function addComment(){
+            var formData = {
+                board_idx : document.querySelector('.board_idx').value,
+                comment_content : document.querySelector('.comment_content').value
+            };
+
+            axios.post('/addComment', formData)
+                .then(function (response) {
+                    console.log(response);
+                    alert('댓글 작성 완료');
+                    location.reload();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert('로그인하세요');
+                });
+        }
+
     </script>
-    </th:block>
-</head>
+</th:block>
 <th:block layout:fragment="content">
-        <div id="board-list">
-            <div class="container">
-                <table class="board-table">
+    <div id="board-list">
+        <div class="container">
+            <table class="board-table">
 
-                    <tr class="title">
-                        <th colspan="2"><span th:text="${board.title}"></span></th>
-                        <div class="idx" th:text="${board.board_idx}" style="display:none"/>
-                    </tr>
-                    <tr class="id-date">
-                        <th colspan="2">작성자: <span th:text="${board.id}" style="margin-right:100px;"></span>작성일자: <span th:text="${#dates.format(board.board_reg_date, 'yyyy-MM-dd HH:mm:ss')}"></span></th>
-                    </tr>
-<!--                   1. file이 있냐 체크하고 2. download_lev와 session 대조하고 클릭할수 있거나 없게 만듬.. -->
-                    <tr class="download">
-                        <th colspan="2"><span th:text="${board.download_lev}"></span></th>
-                    </tr>
-                    <tr class="content">
-                        <th colspan="2"><span th:text="${board.content}"></span></th>
-                    </tr>
-                    <tr class="view-like">
-                        <th><i class="fa fa-eye"></i> <span th:text="${board.board_view}"></span></th>
-                        <th><i class="fa fa-heart"></i> <span th:text="${board.likes}"></span></th>
-                    </tr>
+                <tr class="title">
+                    <th colspan="2"><span th:text="${board.title}"></span></th>
+                    <div class="idx" th:text="${board.board_idx}" style="display:none"/>
+                    <div class="notice" th:text="${board.notice}" style="display:none"/>
+                    <div class="type" th:text="${board.board_type}" style="display:none"/>
+                    <div class="user_idx" th:text="${loginUser != null ? loginUser.user_idx : ''}" style="display:none"/>
+                </tr>
+                <tr class="id-date">
+                    <th colspan="2">작성자: <span th:text="${board.id}" style="margin-right:100px;"></span>작성일자: <span
+                            th:text="${#dates.format(board.board_reg_date, 'yyyy-MM-dd HH:mm:ss')}"></span></th>
+                </tr>
+                <!--                   1. file이 있냐 체크하고 2. download_lev와 session 대조하고 클릭할수 있거나 없게 만듬.. -->
+                <tr class="download">
+                    <th colspan="2"><span th:text="${board.download_lev}"></span></th>
+                </tr>
+                <tr class="content">
+                    <th>
+                        <span th:text="${board.content}"></span>
+                    </th>
+                    <th>
+                        <div class="comment"
+                             style="min-height: 300px; background-color: rgba(22, 26, 48, 0.1); border-radius: 10px; margin-bottom: 10px; padding: 10px">
+                            <div class="comment-line" th:each="comment : ${comments}">
+                                <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
+                                <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
+                                <i class="fa fa-trash"></i>
+                            </div>
+                        </div>
+
+                        <div class="comment-write">
+                            <form id="commentForm">
+                                <input th:type="text" class="board_idx" th:name="board_idx" th:value="${board.board_idx}" style="display:none"/>
+                                <input th:type="text" class="comment_content" th:name="comment_content" placeholder="댓글 입력"
+                                       th:style="'width:80%; height: 25px; padding-left:10px; margin-right:10px; border: none;-webkit-border-radius:0; background-color: rgba(22, 26, 48, 0.1); -webkit-appearance: none;'"
+                                       th:disabled="${loginUser == null}">
+                                <button class="btn2" type="button" onclick="addComment()">댓글 작성</button>
+                            </form>
+
+                        </div>
+                    </th>
+                </tr>
+                <tr class="view-like">
+                    <th><i class="fa fa-eye"></i> <span th:text="${board.board_view}"></span></th>
+                    <th><i class="fa fa-heart"></i> <span th:text="${board.likes}"></span></th>
+                </tr>
 
 
-
-
-                    <!-- 비로그인 -->
-                    <tr th:if="${loginUser == null}">
-                        <th class="buttons" colspan="2">
-                            <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록</button>
-                        </th>
-                    </tr>
-                    <!-- 관리자 & 본인 => 수정, 삭제-->
-                    <tr th:if="${loginUser != null and (loginUser.id.toString().equals(board.id.toString()) or loginUser.id.toString().equals('admin'))}">
-                        <th class="buttons" colspan="2">
-                            <button class="btn">수정</button>
-                            <button class="btn">삭제</button>
-                            <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록</button>
-                        </th>
-                    </tr>
-                    <!-- 관리자 & 본인이 아닌경우(로그인유저) -->
-                    <tr th:if="${loginUser != null and (!loginUser.id.toString().equals(board.id.toString()) and !loginUser.id.toString().equals('admin'))}">
-                        <th class="buttons" colspan="2">
-                            <button class="btn" th:onclick="increaseLike()">좋아요</button>
-                            <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록</button>
-                        </th>
-                    </tr>
-
-
-
-                </table>
-            </div>
+                <!-- 비로그인 -->
+                <tr th:if="${loginUser == null}">
+                    <th class="buttons" colspan="2">
+                        <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록
+                        </button>
+                    </th>
+                </tr>
+                <!-- 관리자 => 수정, 삭제, 공지 -->
+                <tr th:if="${loginUser != null and loginUser.id.toString().equals('admin')}">
+                    <th th:if="${board.notice==false}" th:class="buttons" colspan="2">
+                        <button class="btn" th:onclick="setNotice()">공지지정</button>
+                        <button class="btn" th:onclick="|location.href='@{/modify(board_idx=${board.board_idx})}'|">수정</button>
+                        <button class="btn" th:onclick="deleteBoard()">삭제</button>
+                        <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록
+                        </button>
+                        </button>
+                    </th>
+                    <th th:if="${board.notice==true}" th:class="buttons" colspan="2">
+                        <button class="btn" style="background: #b3b3b3" th:onclick="cancelNotice()">공지지정취소</button>
+                        <button class="btn">수정</button>
+                        <button class="btn" th:onclick="deleteBoard()">삭제</button>
+                        <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록
+                        </button>
+                    </th>
+                </tr>
+                <!-- 본인 => 수정, 삭제-->
+                <tr th:if="${loginUser != null and loginUser.id.toString().equals(board.id.toString()) and !loginUser.id.toString().equals('admin') }">
+                    <th class="buttons" colspan="2">
+                        <button class="btn">수정</button>
+                        <button class="btn" th:onclick="deleteBoard()">삭제</button>
+                        <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록
+                        </button>
+                    </th>
+                </tr>
+                <!-- 관리자도 아니고 본인도 아닌 로그인유저 -->
+                <tr th:if="${loginUser != null and (!loginUser.id.toString().equals(board.id.toString()) and !loginUser.id.toString().equals('admin'))}">
+                    <th class="buttons" colspan="2">
+                        <button class="btn" th:onclick="increaseLike()">좋아요</button>
+                        <button class="btn" th:onclick="|location.href='@{/boardlist(num=${board.board_type})}'|">목록
+                        </button>
+                    </th>
+                </tr>
+            </table>
         </div>
+    </div>
 </th:block>
 </html>

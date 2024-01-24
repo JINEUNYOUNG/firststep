@@ -52,14 +52,26 @@
         UPDATE board SET board_view = board_view+1 WHERE board_idx = #{idx};
     </update>
 
-    <!-- 좋아요+1 -->
-    <update id="increaseLike">
-        INSERT INTO likes (board_idx, user_idx) VALUES (#{board_idx}, #{user_idx});
+    <!-- 글작성자 확인 -->
+    <select id="getBoardWriter" resultType="int">
+        SELECT user_idx FROM board WHERE board_idx = #{board_idx};
+    </select>
+
+    <!-- 글삭제 -->
+    <delete id="deleteBoard">
+        DELETE FROM board WHERE board_idx = #{board_idx};
+    </delete>
+
+    <!-- 공지지정 -->
+    <update id="setNotice">
+        UPDATE board SET notice = 1 WHERE board_idx = #{board_idx};
     </update>
 
-    <!-- 이미 좋아요했었는지? -->
-    <select id="checkLike" resultType="int">
-        SELECT COUNT(*) FROM likes WHERE board_idx = #{board_idx} and user_idx = #{user_idx};
-    </select>
+    <!-- 공지지정취소 -->
+    <update id="cancelNotice">
+        UPDATE board SET notice = 0 WHERE board_idx = #{board_idx};
+    </update>
+
+
 
 </mapper>

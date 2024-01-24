@@ -4,7 +4,6 @@
     <div th:fragment="header" th:class="page-header">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-        <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"  crossorigin="anonymous" referrerpolicy="no-referrer" />
         <style>
         @import url(https://fonts.googleapis.com/css?family=Roboto:300);
@@ -61,7 +60,6 @@
           background-color: rgba(0, 0, 0, 0.5);
           border-radius: 10px;
           border: 1px solid white;
-          box-shadow: 0 14px 28px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.22);
           display: flex;
           padding:10px;
           justify-content: center;
@@ -83,7 +81,7 @@
             }
     </style>
     <div class="logo">
-        <p>FIRST</p>
+        <p onclick="location.href='/'">FIRST</p>
     </div>
     <a id="menu-icon" class="menu-icon" onclick="onMenuClick()">
         <i class="fa fa-bars"></i>
