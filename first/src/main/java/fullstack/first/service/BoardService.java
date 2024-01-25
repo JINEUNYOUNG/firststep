@@ -3,6 +3,7 @@ package fullstack.first.service;
 import fullstack.first.mapper.boardMapper;
 import fullstack.first.vo.Board;
 import fullstack.first.vo.ListForm;
+import fullstack.first.vo.WriteForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,12 @@ public class BoardService {
     }
     public void cancelNotice(int board_idx) throws Exception {
         mapper.cancelNotice(board_idx);
+    }
+
+    //게시물 insert 후에 idx를 반환
+    public int writeBoard(WriteForm writeForm) throws Exception {
+        mapper.writeBoard(writeForm);
+        return mapper.getBoardIdx();
     }
 
 

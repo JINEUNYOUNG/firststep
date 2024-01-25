@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fullstack.first.mapper.fileMapper">
+
+    <resultMap id="fileResultMap" type="fullstack.first.vo.FileVO">
+        <id property="file_idx" column="file_idx"/>
+        <result property="board_idx" column="board_idx"/>
+        <result property="file_name" column="file_name"/>
+        <result property="original_name" column="original_name"/>
+        <result property="file_size" column="file_size"/>
+        <result property="file_extension" column="file_extension"/>
+        <result property="file_reg_date" column="file_reg_date"/>
+    </resultMap>
+
+    <insert id="addFile">
+        INSERT INTO file(board_idx, file_name, original_name, file_size, file_extension) VALUES (#{board_idx},#{files.file_name},#{files.original_name}, #{files.file_size}, #{files.file_extension});
+    </insert>
+
+    <select id="getFilesByIdx" resultMap="fileResultMap">
+        SELECT * FROM file WHERE board_idx = #{board_idx};
+    </select>
+
+    <select id="getFileByIdx" resultMap="fileResultMap">
+        SELECT * FROM file WHERE file_idx = #{file_idx};
+    </select>
+
+
 </mapper>

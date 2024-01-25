@@ -111,7 +111,7 @@
 </th:block>
 <th:block layout:fragment="content">
     <div class="content-container">
-        <form>
+        <form action="/write" id="uploadForm" enctype="multipart/form-data" method="post">
             <select class="dropdown" id="board_type" name="board_type" required>
                 <option value="1">게시판 1</option>
                 <option value="2">게시판 2</option>
@@ -135,6 +135,7 @@
 
             <input type="text" id="title" name="title" placeholder="제목" required/>
             <input type="text" id="username" name="username" th:value="${loginUser.id}" readonly/>
+            <input type="hidden" id="user_idx" name="user_idx" th:value="${loginUser.user_idx}" />
             <textarea id="content" name="content" rows="6" placeholder="내용" required></textarea>
             <button type="submit">글쓰기</button>
         </form>

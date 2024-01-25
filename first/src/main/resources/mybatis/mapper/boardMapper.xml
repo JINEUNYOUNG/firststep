@@ -72,6 +72,13 @@
         UPDATE board SET notice = 0 WHERE board_idx = #{board_idx};
     </update>
 
+    <insert id="writeBoard">
+        INSERT INTO board (board_type, title, content, user_idx, download_lev)
+        VALUES (#{writeForm.board_type},#{writeForm.title},#{writeForm.content},#{writeForm.user_idx},#{writeForm.download_lev});
+    </insert>
 
+    <select id="getBoardIdx" resultType="int">
+        SELECT last_insert_id();
+    </select>
 
 </mapper>

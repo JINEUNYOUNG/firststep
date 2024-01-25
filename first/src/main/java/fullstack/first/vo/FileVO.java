@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class File {
+public class FileVO {
     private int file_idx;
     private int board_idx;
     private String file_name;       //파일 저장명

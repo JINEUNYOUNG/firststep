@@ -82,6 +82,9 @@
             width: 150px;
         }
 
+        img {
+            width:15px;
+        }
         .board-table th, .board-table td {
             padding: 14px 10px;
         }
@@ -320,6 +323,37 @@
                     alert('로그인하세요');
                 });
         }
+        function checkDownloadLev(file_idx){
+            var download_lev = document.querySelector('.download_lev').innerText;
+            var board_idx = document.querySelector('.idx').innerText;
+            var user_idx = document.querySelector('.user_idx').innerText;
+            var id = document.querySelector('.id').innerText;
+
+            var formData = {
+                download_lev : download_lev,
+                board_idx : board_idx,
+                user_idx : user_idx,
+                file_idx : file_idx,
+                id : id
+            }
+            axios.post('/download',formData)
+                .then(response => {
+                    console.log(response);
+                    const contentDispositionHeader = response.headers['content-disposition'];
+                    const decodedFilename = decodeURIComponent(contentDispositionHeader);
+                    const filename = decodedFilename.split('"')[1];
+
+                    const blob = new Blob([response.data]);
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = filename;
+                    link.click();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert(error.response.data);
+                });
+        }
 
     </script>
 </th:block>
@@ -332,16 +366,34 @@
                     <th colspan="2"><span th:text="${board.title}"></span></th>
                     <div class="idx" th:text="${board.board_idx}" style="display:none"/>
                     <div class="notice" th:text="${board.notice}" style="display:none"/>
+                    <div class="download_lev" th:text="${board.download_lev}" style="display:none"/>
                     <div class="type" th:text="${board.board_type}" style="display:none"/>
                     <div class="user_idx" th:text="${loginUser != null ? loginUser.user_idx : ''}" style="display:none"/>
                 </tr>
                 <tr class="id-date">
-                    <th colspan="2">작성자: <span th:text="${board.id}" style="margin-right:100px;"></span>작성일자: <span
+                    <th colspan="2">작성자: <span class="id" th:text="${board.id}" style="margin-right:100px;"></span>작성일자: <span
                             th:text="${#dates.format(board.board_reg_date, 'yyyy-MM-dd HH:mm:ss')}"></span></th>
                 </tr>
-                <!--                   1. file이 있냐 체크하고 2. download_lev와 session 대조하고 클릭할수 있거나 없게 만듬.. -->
-                <tr class="download">
-                    <th colspan="2"><span th:text="${board.download_lev}"></span></th>
+                <tr class="download" th:each="file : ${files}">
+                    <th colspan="2" th:style="'border:none; padding:3px; padding-bottom:10px;'">
+                        <a th:if="${file.getFile_extension().equals('xls')}">
+                            <img class="excel" src="/image/excel.png">
+                        </a>
+                        <a th:if="${file.getFile_extension().equals('pptx')}">
+                            <img class="ppt" src="/image/ppt.png">
+                        </a>
+                        <a th:if="${file.getFile_extension().equals('png')}">
+                            <img class="png" src="/image/png.png">
+                        </a>
+                        <a th:if="${file.getFile_extension().equals('txt')}">
+                            <img class="txt" src="/image/txt.png">
+                        </a>
+                        <a th:if="${file.getFile_extension().equals('word')}">
+                            <img class="word" src="/image/word.png">
+                        </a>
+                        <a th:text="${file.original_name}" th:attr="onclick='checkDownloadLev(' + ${file.file_idx} + ')'" ></a>
+
+                    </th>
                 </tr>
                 <tr class="content">
                     <th>

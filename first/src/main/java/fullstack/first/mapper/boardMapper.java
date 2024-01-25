@@ -1,6 +1,7 @@
 package fullstack.first.mapper;
 
 import fullstack.first.vo.ListForm;
+import fullstack.first.vo.WriteForm;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -19,4 +20,6 @@ public interface boardMapper {
     void deleteBoard(@Param("board_idx") int board_idx) throws Exception;
     void setNotice(@Param("board_idx") int board_idx) throws Exception;
     void cancelNotice(@Param("board_idx") int board_idx) throws Exception;
+    int writeBoard(@Param("writeForm")WriteForm writeForm) throws Exception;
+    int getBoardIdx() throws Exception;
 }

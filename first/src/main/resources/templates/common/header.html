@@ -80,6 +80,14 @@
                 margin-right: 100px;
             }
     </style>
+        <script>
+
+            var message = '[[${message}]]'; // 문자열로 감싸주기
+            console.log(message);
+            if (message) {
+                alert(message);
+            }
+        </script>
     <div class="logo">
         <p onclick="location.href='/'">FIRST</p>
     </div>

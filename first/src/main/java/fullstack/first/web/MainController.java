@@ -1,9 +1,6 @@
 package fullstack.first.web;
 
-import fullstack.first.service.BoardService;
-import fullstack.first.service.CommentService;
-import fullstack.first.service.LoginService;
-import fullstack.first.service.SignupService;
+import fullstack.first.service.*;
 import fullstack.first.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +27,14 @@ public class MainController {
     public BoardService boardService;
     @Autowired
     public CommentService commentService;
+    @Autowired
+    public FileService fileService;
 
 
     //메인화면. 세션에 로그인정보가 있으면 모델에 넣어준다.
     @GetMapping("/")
-    public String index(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) User loginUser, Model model) throws Exception {
+    public String index(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) User loginUser,
+                        Model model) {
         if (loginUser == null) {
             return "index";
         }
@@ -44,8 +44,10 @@ public class MainController {
 
     //로그인화면(get)
     @GetMapping("login")
-    public String loginpage(Model model) throws Exception {
+    public String loginpage(@SessionAttribute(name = "message", required = false) String message, Model model) throws Exception {
         model.addAttribute("loginForm", new LoginForm());
+        model.addAttribute("message", message);
+        System.out.println("여기" + message);
         return "login";
     }
 
@@ -89,9 +91,7 @@ public class MainController {
     @PostMapping("signup")
     public String signupUser(@ModelAttribute("signForm") SignForm signForm,
                              Model model) throws Exception {
-        //System.out.println(signForm.toString());
         signupService.signup(signForm);
-        System.out.println(signForm.toString());
         return "/login";
     }
 
@@ -125,6 +125,8 @@ public class MainController {
         //게시글정보
         ListForm singleBoard = boardService.findBoardByIdx(idx);
         model.addAttribute("board", singleBoard);
+        //첨부파일정보
+        model.addAttribute("files", fileService.getFilesByIdx(idx));
         //댓글정보
         List<CommentForm> comments = commentService.findCommentByIdx(idx);
         model.addAttribute("comments", comments);
@@ -136,10 +138,30 @@ public class MainController {
 
     //글작성화면. 작성자확인을 위해 현재 로그인정보를 넣어준다.
     @GetMapping("write")
-    public String write(HttpSession session, Model model) throws Exception {
+    public String write(HttpSession session, Model model) {
         User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+        if (loginUser == null) {
+            throw new NullPointerException("로그인해야합니다.");
+        }
         model.addAttribute("loginUser", loginUser);
         return "write";
+    }
+
+
+    //글작성
+    @PostMapping("write")
+    public String write(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
+        int board_idx = boardService.writeBoard(writeForm);
+        int result = 0;
+        if (!writeForm.getFile().isEmpty()) {
+            result = fileService.addFile(board_idx, writeForm.getFile());
+        }
+        if (result == 1) {
+            return "redirect:/boardlist?num=" + writeForm.getBoard_type();
+        } else {
+            model.addAttribute("message", "글쓰기 실패하였습니다.");
+            return "redirect:/boardlist?num=" + writeForm.getBoard_type();
+        }
     }
 
     @GetMapping("modify")
@@ -151,7 +173,6 @@ public class MainController {
 
     /**
      * openAPI 로 실시간 날씨 가져와보기
-     *
      */
 
     //openapi시도
