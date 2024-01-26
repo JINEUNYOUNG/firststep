@@ -102,14 +102,13 @@ public class MainController {
         return "/login";
     }
 
-    //게시판리스트. 1페이지 분량의 list를 담아 반환
+    //게시판리스트. 1페이지 분량의 list를 가져온다
     @GetMapping("boardlist")
     public String boardlist(Model model, @RequestParam(name = "num", required = false) int num,
                             @RequestParam(name = "page", required = false, defaultValue = "1") int page) throws Exception {
-        //게시판종류+페이지번호를 받아 리스트반환
+        //게시판종류+페이지번호를 받아 리스트반환 + 공지사항 리스트반환
         List<ListForm> boardlist = boardService.getList(num, page);
         List<ListForm> noticelist = boardService.getNotice(num);
-        System.out.println(boardlist.toString());
         if (boardlist != null) {
             model.addAttribute("boardlist", boardlist);
         } else {
@@ -172,6 +171,7 @@ public class MainController {
         }
     }
 
+    //수정페이지
     @GetMapping("modify")
     public String modify(HttpSession session, Model model, @RequestParam(name = "board_idx", required = false) int board_idx) throws Exception {
         ListForm singleBoard = boardService.findBoardByIdx(board_idx);
@@ -179,6 +179,7 @@ public class MainController {
         return "modify";
     }
 
+    //글 수정기능
     @PostMapping("modify")
     public String modify(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
         boardService.modifyBoard(writeForm);
@@ -194,6 +195,7 @@ public class MainController {
         }
     }
 
+    //엑셀데이터를 받아와 읽어 write화면에 뿌려준다
     @PostMapping("excel/read")
     public String readExcel(@RequestParam("excelFile") MultipartFile file, Model model, HttpSession session) throws IOException {
         String originalFilename = file.getOriginalFilename();
