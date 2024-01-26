@@ -4,10 +4,12 @@ import fullstack.first.service.*;
 import fullstack.first.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -15,9 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @RestController
@@ -125,6 +132,7 @@ public class MainRestController {
     //다운로드 선택 시, 권한 비교 후 url반환
     @PostMapping("download")
     public ResponseEntity<Resource> download(HttpSession session, @RequestBody DownloadForm downloadForm) throws Exception {
+
         User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
         //널값 처리 먼저
         if (loginUser == null) {
@@ -158,24 +166,25 @@ public class MainRestController {
     public ResponseEntity<Resource> performDownload(int file_idx) {
         try {
             FileVO file = fileService.getFileByIdx(file_idx);
-            System.out.println(file.toString());
-            UrlResource urlResource = new UrlResource("file:" + System.getProperty("user.dir") + "\\upload\\" + file.getFile_name());
-            System.out.println(urlResource);
 
-            // 파일명을 인코딩하여 Content-Disposition 헤더에 추가 (여긴 실제로 다운로드 되는 파일명)
+            // 파일 데이터를 가져오는 코드로 대체
+            byte[] fileData = fileService.getFileData(file);  // 파일 데이터 가져오는 메서드 사용
+
             String encodeUploadFileName = UriUtils.encode(file.getOriginal_name(), StandardCharsets.UTF_8);
-            String contentDisposition = "attachment; filename=\"" + encodeUploadFileName + "\"";
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", encodeUploadFileName);
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-            System.out.println(contentDisposition);
             // ResponseEntity로 파일과 헤더 정보 반환
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                    .body(urlResource);
+            return new ResponseEntity<>(new ByteArrayResource(fileData), headers, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                     .body(new ByteArrayResource(("다운로드 중 오류가 발생했습니다. 오류 메시지: " + e.getMessage()).getBytes()));
+
         }
+
+
     }
 
 }

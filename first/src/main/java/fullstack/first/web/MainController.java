@@ -152,6 +152,8 @@ public class MainController {
     @PostMapping("write")
     public String write(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
         int board_idx = boardService.writeBoard(writeForm);
+        System.out.println("///////");
+        System.out.println(writeForm.getFile().get(0).getContentType());
         int result = 0;
         if (!writeForm.getFile().isEmpty()) {
             result = fileService.addFile(board_idx, writeForm.getFile());

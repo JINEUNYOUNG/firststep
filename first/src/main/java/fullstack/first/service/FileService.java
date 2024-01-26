@@ -9,6 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +28,7 @@ public class FileService {
             String savePath = System.getProperty("user.dir") + "\\upload"; //사용자의 루트경로의 upload파일
             if (!new File(savePath).exists()) {
                 try {
-                    new File(savePath).mkdir();
+                    new File(savePath).mkdirs();
                 } catch (Exception e) {
                     e.getStackTrace();
                 }
@@ -67,6 +70,13 @@ public class FileService {
 
     public FileVO getFileByIdx(int file_idx) throws Exception {
         return mapper.getFileByIdx(file_idx);
+    }
+
+    public byte[] getFileData(FileVO file) throws Exception {
+        String savePath = System.getProperty("user.dir") + "\\upload\\";
+        Path filePath = Paths.get(savePath+file.getFile_name());
+        System.out.println(filePath);
+        return Files.readAllBytes(filePath);
     }
 
 }
