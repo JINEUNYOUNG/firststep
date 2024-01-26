@@ -4,9 +4,7 @@ import fullstack.first.service.*;
 import fullstack.first.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,15 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Map;
 
 @RestController
 public class MainRestController {
@@ -144,20 +135,20 @@ public class MainRestController {
         }
         //권한에 따른 다운로드 처리
         switch (downloadForm.getDownload_lev()) {
-            case 0 : //관리자만
-                if (loginUser.getId().equals("admin")){
+            case 0: //관리자만
+                if (loginUser.getId().equals("admin")) {
                     return performDownload(downloadForm.getFile_idx());
                 } else {
                     return ResponseEntity.badRequest().body(new ByteArrayResource("관리자만 다운로드 가능합니다.".getBytes()));
                 }
-            case 1 : //몬인만
+            case 1: //몬인만
                 if (loginUser.getId().equals(downloadForm.getId()) || loginUser.getUser_idx() == 1) {
                     return performDownload(downloadForm.getFile_idx());
                 } else {
                     return ResponseEntity.badRequest().body(new ByteArrayResource("관리자 또는 작성자만 다운로드 가능합니다.".getBytes()));
                 }
-            case 2 :
-            case 3 : //전체
+            case 2:
+            case 3: //전체
                 return performDownload(downloadForm.getFile_idx());
         }
         return ResponseEntity.badRequest().body(new ByteArrayResource("실패".getBytes()));
@@ -181,10 +172,7 @@ public class MainRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
                     .body(new ByteArrayResource(("다운로드 중 오류가 발생했습니다. 오류 메시지: " + e.getMessage()).getBytes()));
-
         }
-
-
     }
 
 }

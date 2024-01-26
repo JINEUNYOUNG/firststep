@@ -22,4 +22,5 @@ public interface boardMapper {
     void cancelNotice(@Param("board_idx") int board_idx) throws Exception;
     int writeBoard(@Param("writeForm")WriteForm writeForm) throws Exception;
     int getBoardIdx() throws Exception;
+    void modifyBoard(@Param("writeForm")WriteForm writeForm) throws Exception;
 }

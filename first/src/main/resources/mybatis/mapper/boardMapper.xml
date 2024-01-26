@@ -81,4 +81,9 @@
         SELECT last_insert_id();
     </select>
 
+    <update id="modifyBoard" >
+        UPDATE board SET board_type = #{writeForm.board_type}, title = #{writeForm.title}, content=#{writeForm.content}, download_lev=#{writeForm.download_lev} WHERE board_idx = #{writeForm.board_idx};
+    </update>
+
+
 </mapper>

@@ -60,6 +60,9 @@ public class BoardService {
         mapper.writeBoard(writeForm);
         return mapper.getBoardIdx();
     }
+    public void modifyBoard(WriteForm writeForm) throws Exception {
+        mapper.modifyBoard(writeForm);
+    }
 
 
 }

@@ -3,17 +3,25 @@ package fullstack.first.web;
 import fullstack.first.service.*;
 import fullstack.first.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Controller
@@ -47,7 +55,6 @@ public class MainController {
     public String loginpage(@SessionAttribute(name = "message", required = false) String message, Model model) throws Exception {
         model.addAttribute("loginForm", new LoginForm());
         model.addAttribute("message", message);
-        System.out.println("여기" + message);
         return "login";
     }
 
@@ -102,6 +109,7 @@ public class MainController {
         //게시판종류+페이지번호를 받아 리스트반환
         List<ListForm> boardlist = boardService.getList(num, page);
         List<ListForm> noticelist = boardService.getNotice(num);
+
         if (boardlist != null) {
             model.addAttribute("boardlist", boardlist);
         } else {
@@ -152,10 +160,8 @@ public class MainController {
     @PostMapping("write")
     public String write(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
         int board_idx = boardService.writeBoard(writeForm);
-        System.out.println("///////");
-        System.out.println(writeForm.getFile().get(0).getContentType());
         int result = 0;
-        if (!writeForm.getFile().isEmpty()) {
+        if (!writeForm.getFile().get(0).getOriginalFilename().trim().isEmpty()) {
             result = fileService.addFile(board_idx, writeForm.getFile());
         }
         if (result == 1) {
@@ -173,6 +179,54 @@ public class MainController {
         return "modify";
     }
 
+    @PostMapping("modify")
+    public String modify(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
+        boardService.modifyBoard(writeForm);
+
+        int result = 0;
+        if (!writeForm.getFile().isEmpty()) {
+            result = fileService.addFile(writeForm.getBoard_idx(), writeForm.getFile());
+        }
+        if (result == 1) {
+            return "redirect:/boardlist?num=" + writeForm.getBoard_type();
+        } else {
+            model.addAttribute("message", "수정 실패하였습니다.");
+            return "redirect:/boardlist?num=" + writeForm.getBoard_type();
+        }
+    }
+
+    @PostMapping("excel/read")
+    public String readExcel(@RequestParam("excelFile") MultipartFile file, Model model, HttpSession session) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
+        //엑셀이 아닌 경우
+        if (!extension.equals("xlsx") && !extension.equals("xls")) {
+            throw new IOException("엑셀파일만 업로드 해주세요.");
+        }
+        Workbook workbook = null;
+        //엑셀 버전에 따라 처리
+        if (extension.equals("xlsx")) {
+            workbook = new XSSFWorkbook(file.getInputStream());
+        } else if (extension.equals("xls")) {
+            workbook = new HSSFWorkbook(file.getInputStream());
+        }
+        //1행의 데이터를 가져와서 WriteForm 객체에 주입후 반환
+        Sheet worksheet = workbook.getSheetAt(0);
+        Row row = worksheet.getRow(1);
+        WriteForm data = new WriteForm();
+        data.setTitle(row.getCell(0).getStringCellValue());
+        data.setContent(row.getCell(1).getStringCellValue());
+        data.setBoard_type((int)row.getCell(2).getNumericCellValue());
+        model.addAttribute("excel", data);
+        //writer 처리
+        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+        if (loginUser == null) {
+            throw new NullPointerException("로그인해야합니다.");
+        }
+        model.addAttribute("loginUser", loginUser);
+
+        return "write";
+    }
     /**
      * openAPI 로 실시간 날씨 가져와보기
      */

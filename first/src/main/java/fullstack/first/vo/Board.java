@@ -10,7 +10,7 @@ public class Board {
     private String title;
     private String content;
     private int user_idx;
-    private int board_type;      //게시판 타입 0~3
+    private int board_type;      //게시판 타입 1~3
     private Timestamp board_reg_date;
     private int board_view;      //조회수
     private boolean notice;      //공지여부
