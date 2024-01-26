@@ -196,8 +196,11 @@ background:linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1
 }
 
 .notice{
-    background: #EEF5FF;
+    background-color: beige;
     font-weight: bold;
+}
+img {
+    width : 14px;
 }
 </style>
     <script>
@@ -254,7 +257,25 @@ background:linear-gradient(to right, rgba(22, 26, 48, 0.1), rgba(49, 48, 77, 0.1
                     <!--일반-->
                     <tr th:each="board : ${boardlist}" th:onclick="|location.href='@{/board(idx=${board.board_idx})}'|">
                         <td th:text="${board.board_idx}"></td>
-                        <td th:text="${board.title}"></td>
+                        <td th:if="${board.file_count!=0 && board.file_extension.equals('xls')}">
+                            [[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/excel.png}" />[[${board.file_count}]]
+                        </td>
+                        <td th:if="${board.file_count!=0 && board.file_extension.equals('png')}">
+                            [[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/png.png}" />[[${board.file_count}]]
+                        </td>
+                        <td th:if="${board.file_count!=0 && board.file_extension.equals('txt')}">
+                            [[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/txt.png}" />[[${board.file_count}]]
+                        </td>
+                        <td th:if="${board.file_count!=0 && board.file_extension.equals('pptx')}">
+                            [[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/ppt.png}" />[[${board.file_count}]]
+                        </td>
+                        <td th:if="${board.file_count!=0 && board.file_extension.equals('word')}">
+                            [[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/word.png}" />[[${board.file_count}]]
+                        </td>
+                        <div th:if="${board.file_count==0}">
+                            <td>[[${board.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${board.comment_count}]]</td>
+                        </div>
+
                         <td th:text="${board.id}"></td>
                         <td th:text="${#dates.format(board.board_reg_date, 'yyyy-MM-dd HH:mm')}"></td>
                         <td th:text="${board.board_view}"></td>

@@ -109,7 +109,7 @@ public class MainController {
         //게시판종류+페이지번호를 받아 리스트반환
         List<ListForm> boardlist = boardService.getList(num, page);
         List<ListForm> noticelist = boardService.getNotice(num);
-
+        System.out.println(boardlist.toString());
         if (boardlist != null) {
             model.addAttribute("boardlist", boardlist);
         } else {
@@ -182,7 +182,6 @@ public class MainController {
     @PostMapping("modify")
     public String modify(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
         boardService.modifyBoard(writeForm);
-
         int result = 0;
         if (!writeForm.getFile().isEmpty()) {
             result = fileService.addFile(writeForm.getBoard_idx(), writeForm.getFile());

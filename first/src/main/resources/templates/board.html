@@ -391,7 +391,7 @@
                         <a th:if="${file.getFile_extension().equals('word')}">
                             <img class="word" src="/image/word.png">
                         </a>
-                        <a th:text="${file.original_name}" th:attr="onclick='checkDownloadLev(' + ${file.file_idx} + ')'" ></a>
+                        <a th:text="${file.original_name} + '   (' + ${file.file_size}+'Byte)'" th:attr="onclick='checkDownloadLev(' + ${file.file_idx} + ')'" ></a>
 
                     </th>
                 </tr>
