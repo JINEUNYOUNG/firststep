@@ -3,116 +3,144 @@
 <mapper namespace="fullstack.first.mapper.boardMapper">
 
     <resultMap id="boardResultMap" type="fullstack.first.vo.ListForm">
-        <id property="board_idx" column="board_idx" />
-        <result property="title" column="title" />
-        <result property="content" column="content" />
-        <result property="id" column="id" />
-        <result property="board_type" column="board_type" />
-        <result property="board_reg_date" column="board_reg_date" />
-        <result property="board_view" column="board_view" />
-        <result property="likes" column="likes" />
-        <result property="notice" column="notice" />
-        <result property="file_count" column="file_count" />
-        <result property="file_extension" column="file_extension" />
-        <result property="comment_count" column="comment_count" />
+        <id property="board_idx" column="board_idx"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="id" column="id"/>
+        <result property="board_type" column="board_type"/>
+        <result property="board_reg_date" column="board_reg_date"/>
+        <result property="board_view" column="board_view"/>
+        <result property="likes" column="likes"/>
+        <result property="notice" column="notice"/>
+        <result property="file_count" column="file_count"/>
+        <result property="file_extension" column="file_extension"/>
+        <result property="comment_count" column="comment_count"/>
     </resultMap>
 
     <!-- boardtype에 맞는 1페이지 분량의 리스트 반환 (like와 file 테이블 join)-->
     <select id="getList" resultMap="boardResultMap">
-        SELECT
-            b.*,
-            (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes,
-            u.id,
-            ff.file_count,
-            ff.file_extension,
-            COUNT(c.comment_idx) AS comment_count
-        FROM
-            board b
-                LEFT JOIN
-            user u ON b.user_idx = u.user_idx
-                LEFT JOIN
-            (SELECT
-                 bb.board_idx,
-                 COUNT(f.file_idx) AS file_count,
-                 MAX(f.file_extension) AS file_extension
-             FROM
-                 board bb
-                     LEFT JOIN
-                 file f ON bb.board_idx = f.board_idx
-             GROUP BY
-                 bb.board_idx) AS ff ON b.board_idx = ff.board_idx
-                LEFT JOIN
-            comment c ON b.board_idx = c.board_idx
-        WHERE
-            board_type = #{num}
-        GROUP BY
-            b.board_idx
-        ORDER BY
-            b.board_idx DESC
-            LIMIT
-    10 OFFSET #{page};
-
+        SELECT b.*,
+               (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes,
+               u.id,
+               ff.file_count,
+               ff.file_extension,
+               COUNT(c.comment_idx)                                           AS comment_count
+        FROM board b
+                 LEFT JOIN user u ON b.user_idx = u.user_idx
+                 LEFT JOIN (SELECT bb.board_idx,
+                                   COUNT(f.file_idx)     AS file_count,
+                                   MAX(f.file_extension) AS file_extension
+                            FROM board bb
+                                     LEFT JOIN file f ON bb.board_idx = f.board_idx
+                            GROUP BY bb.board_idx) AS ff ON b.board_idx = ff.board_idx
+                 LEFT JOIN comment c ON b.board_idx = c.board_idx
+        WHERE board_type = #{num}
+        GROUP BY b.board_idx
+        ORDER BY b.board_idx DESC LIMIT 10
+        OFFSET #{page};
     </select>
 
     <!-- boardtype에 맞는 최대 3개까지 공지 -->
     <select id="getNotice" resultMap="boardResultMap">
-        SELECT b.*, (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes, c.id
+        SELECT b.*,
+               (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes,
+               u.id,
+               ff.file_count,
+               ff.file_extension,
+               COUNT(c.comment_idx) AS comment_count
         FROM board b
-                 LEFT JOIN user c ON b.user_idx = c.user_idx
-        WHERE board_type = #{num} and notice = 1
-        ORDER BY board_idx DESC
-        LIMIT 3;
+                 LEFT JOIN user u ON b.user_idx = u.user_idx
+                 LEFT JOIN (SELECT bb.board_idx,
+                                   COUNT(f.file_idx) AS file_count,
+                                   MAX(f.file_extension) AS file_extension
+                            FROM board bb
+                                     LEFT JOIN file f ON bb.board_idx = f.board_idx
+                            GROUP BY bb.board_idx) AS ff ON b.board_idx = ff.board_idx
+                 LEFT JOIN comment c ON b.board_idx = c.board_idx
+        WHERE b.board_type = 1 AND b.notice = 1
+        GROUP BY b.board_idx
+        ORDER BY b.board_idx DESC
+            LIMIT 3;
     </select>
 
     <!-- 해당 boardtype의 게시물 총 갯수 -->
     <select id="getTotalPage" resultType="int">
-        SELECT COUNT(*) AS total FROM board WHERE board_type = #{num};
+        SELECT COUNT(*) AS total
+        FROM board
+        WHERE board_type = #{num};
     </select>
 
     <!-- idx로 해당게시물 정보 가져오기 -->
     <select id="findBoardByIdx" resultMap="boardResultMap">
-        SELECT b.*, (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes, c.id
+        SELECT b.*,
+               (SELECT COUNT(*) FROM likes l WHERE l.board_idx = b.board_idx) AS likes,
+               u.id,
+               ff.file_count,
+               ff.file_extension,
+               COUNT(c.comment_idx) AS comment_count
         FROM board b
-                 LEFT JOIN user c ON b.user_idx = c.user_idx
-        WHERE board_idx = #{idx};
+                 LEFT JOIN user u ON b.user_idx = u.user_idx
+                 LEFT JOIN (SELECT bb.board_idx, COUNT(f.file_idx) AS file_count, MAX(f.file_extension) AS file_extension
+                            FROM board bb
+                                     LEFT JOIN file f ON bb.board_idx = f.board_idx
+                            GROUP BY bb.board_idx) AS ff ON b.board_idx = ff.board_idx
+                 LEFT JOIN comment c ON b.board_idx = c.board_idx
+        WHERE b.board_idx = #{idx}
+        GROUP BY b.board_idx;
     </select>
 
     <!-- 조회수+1 -->
     <update id="increaseView">
-        UPDATE board SET board_view = board_view+1 WHERE board_idx = #{idx};
+        UPDATE board
+        SET board_view = board_view + 1
+        WHERE board_idx = #{idx};
     </update>
 
     <!-- 글작성자 확인 -->
     <select id="getBoardWriter" resultType="int">
-        SELECT user_idx FROM board WHERE board_idx = #{board_idx};
+        SELECT user_idx
+        FROM board
+        WHERE board_idx = #{board_idx};
     </select>
 
     <!-- 글삭제 -->
     <delete id="deleteBoard">
-        DELETE FROM board WHERE board_idx = #{board_idx};
+        DELETE
+        FROM board
+        WHERE board_idx = #{board_idx};
     </delete>
 
     <!-- 공지지정 -->
     <update id="setNotice">
-        UPDATE board SET notice = 1 WHERE board_idx = #{board_idx};
+        UPDATE board
+        SET notice = 1
+        WHERE board_idx = #{board_idx};
     </update>
 
     <!-- 공지지정취소 -->
     <update id="cancelNotice">
-        UPDATE board SET notice = 0 WHERE board_idx = #{board_idx};
+        UPDATE board
+        SET notice = 0
+        WHERE board_idx = #{board_idx};
     </update>
 
     <insert id="writeBoard">
         INSERT INTO board (board_type, title, content, user_idx, download_lev)
-        VALUES (#{writeForm.board_type},#{writeForm.title},#{writeForm.content},#{writeForm.user_idx},#{writeForm.download_lev});
+        VALUES (#{writeForm.board_type}, #{writeForm.title}, #{writeForm.content}, #{writeForm.user_idx},
+                #{writeForm.download_lev});
     </insert>
 
     <select id="getBoardIdx" resultType="int">
         SELECT last_insert_id();
     </select>
 
-    <update id="modifyBoard" >
-        UPDATE board SET board_type = #{writeForm.board_type}, title = #{writeForm.title}, content=#{writeForm.content}, download_lev=#{writeForm.download_lev} WHERE board_idx = #{writeForm.board_idx};
+    <update id="modifyBoard">
+        UPDATE board
+        SET board_type  = #{writeForm.board_type},
+            title       = #{writeForm.title},
+            content=#{writeForm.content},
+            download_lev=#{writeForm.download_lev}
+        WHERE board_idx = #{writeForm.board_idx};
     </update>
 
 

@@ -2,6 +2,11 @@ package fullstack.first.web;
 
 import fullstack.first.service.*;
 import fullstack.first.vo.*;
+import fullstack.first.vo.Comment;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -15,8 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 public class MainRestController {
@@ -128,9 +138,9 @@ public class MainRestController {
         //널값 처리 먼저
         if (loginUser == null) {
             if (downloadForm.getDownload_lev() == 3) {
-                return performDownload(downloadForm.getFile_idx());
+                return performDownload(downloadForm.getFile_idx()); //전체면 다운로드 되게
             } else {
-                return ResponseEntity.badRequest().body(new ByteArrayResource("로그인 후 다운로드 가능합니다.".getBytes()));
+                return new ResponseEntity<>(new ByteArrayResource("로그인하세요.".getBytes()), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         //권한에 따른 다운로드 처리
@@ -139,13 +149,13 @@ public class MainRestController {
                 if (loginUser.getId().equals("admin")) {
                     return performDownload(downloadForm.getFile_idx());
                 } else {
-                    return ResponseEntity.badRequest().body(new ByteArrayResource("관리자만 다운로드 가능합니다.".getBytes()));
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ByteArrayResource("관리자만 다운로드 가능합니다.".getBytes()));
                 }
             case 1: //몬인만
                 if (loginUser.getId().equals(downloadForm.getId()) || loginUser.getUser_idx() == 1) {
                     return performDownload(downloadForm.getFile_idx());
                 } else {
-                    return ResponseEntity.badRequest().body(new ByteArrayResource("관리자 또는 작성자만 다운로드 가능합니다.".getBytes()));
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ByteArrayResource("관리자 또는 작성자만 다운로드 가능합니다.".getBytes()));
                 }
             case 2:
             case 3: //전체
@@ -154,6 +164,7 @@ public class MainRestController {
         return ResponseEntity.badRequest().body(new ByteArrayResource("실패".getBytes()));
     }
 
+    //실제 다운로드 데이터 받아오는 메서드
     public ResponseEntity<Resource> performDownload(int file_idx) {
         try {
             FileVO file = fileService.getFileByIdx(file_idx);
@@ -175,4 +186,50 @@ public class MainRestController {
         }
     }
 
+    //엑셀로 내보내기
+    @GetMapping("/exportExcel")
+    public ResponseEntity<String> exportExcel(@RequestParam int board_idx, HttpServletResponse response) throws Exception {
+        try {
+            ListForm board = boardService.findBoardByIdx(board_idx);
+            Workbook workbook = new HSSFWorkbook();
+            Sheet sheet = workbook.createSheet(board_idx + "번글");
+            int rowNo = 0;
+            Row headerRow = sheet.createRow(rowNo++);
+            headerRow.createCell(0).setCellValue("게시판번호");
+            headerRow.createCell(1).setCellValue("게시글번호");
+            headerRow.createCell(2).setCellValue("제목");
+            headerRow.createCell(3).setCellValue("내용");
+            headerRow.createCell(4).setCellValue("작성자");
+            headerRow.createCell(5).setCellValue("작성일자");
+            headerRow.createCell(6).setCellValue("파일확장자");
+            headerRow.createCell(7).setCellValue("파일수");
+            headerRow.createCell(8).setCellValue("다운로드권한");
+
+            Row row = sheet.createRow(rowNo++);
+
+            row.createCell(0).setCellValue(board.getBoard_type());
+            row.createCell(1).setCellValue(board.getBoard_idx());
+            row.createCell(2).setCellValue(board.getTitle());
+            row.createCell(3).setCellValue(board.getContent());
+            row.createCell(4).setCellValue(board.getId());
+            row.createCell(5).setCellValue(board.getBoard_reg_date()+"");
+            if (board.getFile_extension() == null) {
+                row.createCell(6).setCellValue("-");
+            } else {
+                row.createCell(6).setCellValue(board.getFile_extension());
+            }
+            row.createCell(7).setCellValue(board.getFile_count());
+            row.createCell(8).setCellValue(board.getDownload_lev());
+
+            String savePath = System.getProperty("user.dir") + "\\upload\\" + "board_idx_" + board.getBoard_idx() + ".xls";
+            File file = new File(savePath);
+            workbook.write(new FileOutputStream(file));
+            workbook.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 생성 중 오류가 발생했습니다.");
+        }
+        return ResponseEntity.ok().body("다운로드되었습니다.");
+
+    }
 }

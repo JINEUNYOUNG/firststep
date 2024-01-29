@@ -228,7 +228,6 @@ img {
                     <tr style="border:none ;">
                         <th colspan="5"></th>
                         <th>
-<!--                            <button class="btn" onclick="location.href='/write'">WRITE</button>-->
                             <button class="btn" onclick="checkAuthority()">WRITE</button>
                         </th>
                     </tr>
@@ -247,7 +246,24 @@ img {
                     <!--공지사항-->
                     <tr th:class="notice" th:each="notice : ${noticelist}" th:onclick="|location.href='@{/board(idx=${notice.board_idx})}'|">
                         <td>🚩</td>
-                        <th th:text="'[공지]   '+${notice.title}"></th>
+                        <td th:if="${notice.file_count!=0 && notice.file_extension.equals('xls')}">
+                            [공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/excel.png}" />[[${notice.file_count}]]
+                        </td>
+                        <td th:if="${notice.file_count!=0 && notice.file_extension.equals('png')}">
+                            [공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/png.png}" />[[${notice.file_count}]]
+                        </td>
+                        <td th:if="${notice.file_count!=0 && notice.file_extension.equals('txt')}">
+                            [공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/txt.png}" />[[${notice.file_count}]]
+                        </td>
+                        <td th:if="${notice.file_count!=0 && notice.file_extension.equals('pptx')}">
+                            [공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/ppt.png}" />[[${notice.file_count}]]
+                        </td>
+                        <td th:if="${notice.file_count!=0 && notice.file_extension.equals('word')}">
+                            [공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img th:src="@{/image/word.png}" />[[${notice.file_count}]]
+                        </td>
+                        <div th:if="${notice.file_count==0}">
+                            <td>[공지] [[${notice.title}]] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class="fa fa-comment"></i> [[${notice.comment_count}]]</td>
+                        </div>
                         <td th:text="${notice.id}"></td>
                         <td th:text="${#dates.format(notice.board_reg_date, 'yyyy-MM-dd HH:mm')}"></td>
                         <td th:text="${notice.board_view}"></td>

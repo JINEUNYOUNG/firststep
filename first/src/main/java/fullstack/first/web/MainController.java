@@ -180,8 +180,9 @@ public class MainController {
     }
 
     //글 수정기능
-    @PostMapping("modify")
-    public String modify(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
+    @GetMapping("modifyBoard")
+    public String modifyBoard(HttpSession session, Model model, @ModelAttribute WriteForm writeForm) throws Exception {
+        System.out.println("여기");
         boardService.modifyBoard(writeForm);
         int result = 0;
         if (!writeForm.getFile().isEmpty()) {
@@ -228,6 +229,7 @@ public class MainController {
 
         return "write";
     }
+
     /**
      * openAPI 로 실시간 날씨 가져와보기
      */
