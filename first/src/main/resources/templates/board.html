@@ -462,7 +462,7 @@
                                     <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
                                     <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
                                     <span th:if="${loginUser != null and (loginUser.id.toString().equals(board.id.toString()) or loginUser.id.toString().equals('admin'))}">
-                                        <i class="fa fa-reply" th:onclick="toggleCommentInput(this)"></i>
+                                        <i class="fa fa-reply" th:onclick="|toggleCommentInput(this)|"></i>
                                         <i class="fa fa-trash"></i>
                                     </span>
                                 </span>
