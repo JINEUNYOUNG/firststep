@@ -130,6 +130,16 @@ public class MainRestController {
                 : ResponseEntity.badRequest().body("실패");
     }
 
+    @PostMapping("/addNestedComment")
+    public ResponseEntity<String> addNestedComment(HttpSession session, @RequestBody Comment comment) throws Exception {
+        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+        comment.setUser_idx(loginUser.getUser_idx());
+        System.out.println(comment.toString());
+        return (commentService.addNestedComment(comment))
+                ? ResponseEntity.ok().body("대댓글작성완료")
+                : ResponseEntity.badRequest().body("실패");
+    }
+
     //다운로드 선택 시, 권한 비교 후 url반환
     @PostMapping("download")
     public ResponseEntity<Resource> download(HttpSession session, @RequestBody DownloadForm downloadForm) throws Exception {

@@ -14,12 +14,19 @@
         INSERT INTO comment(board_idx, comment_content, user_idx) VALUES (#{board_idx}, #{comment_content}, #{user_idx});
     </insert>
 
+    <insert id = "addNestedComment">
+        INSERT INTO comment(board_idx, comment_content, user_idx, comment_class, comment_group) VALUES (#{comment.board_idx}, #{comment.comment_content}, #{comment.user_idx},1,#{comment.comment_idx});
+    </insert>
+
     <select id = "findCommentByIdx" resultMap="commentResultMap">
-        SELECT c.*, u.id
+        SELECT c.*, u.id, CASE
+                              WHEN c.comment_group IS NOT NULL THEN comment_group+0.1
+                              ELSE comment_idx
+            end as result
         FROM comment c
                  JOIN user u ON u.user_idx = c.user_idx
         WHERE c.board_idx = #{idx}
-        ORDER BY comment_idx;
+        order by result
     </select>
 
 </mapper>

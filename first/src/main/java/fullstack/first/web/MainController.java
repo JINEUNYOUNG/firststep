@@ -99,7 +99,7 @@ public class MainController {
     public String signupUser(@ModelAttribute("signForm") SignForm signForm,
                              Model model) throws Exception {
         signupService.signup(signForm);
-        return "/login";
+        return "redirect:/login";
     }
 
     //게시판리스트. 1페이지 분량의 list를 가져온다

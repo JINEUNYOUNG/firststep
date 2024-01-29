@@ -20,6 +20,9 @@ public class CommentService {
     public boolean addComment(Comment comment) throws Exception{
         return mapper.addComment(comment.getBoard_idx(), comment.getComment_content(), comment.getUser_idx()) == 1;
     }
+    public boolean addNestedComment(Comment comment) throws Exception{
+        return mapper.addNestedComment(comment) == 1;
+    }
 
     public List<CommentForm> findCommentByIdx(int idx) throws Exception{
         return mapper.findCommentByIdx(idx);

@@ -323,7 +323,19 @@
                     alert('로그인하세요');
                 });
         }
-        function checkDownloadLev(file_idx){
+        function toggleCommentInput(iconElement) {
+            var commentContainer = iconElement.closest('.comment-line');
+
+            var nestedCommentContainer = commentContainer.querySelector('.nested-comment-container');
+
+            // Toggle the display property to show/hide the container
+            if (nestedCommentContainer.style.display === 'none') {
+                nestedCommentContainer.style.display = 'block';
+            } else {
+                nestedCommentContainer.style.display = 'none';
+            }
+        }
+            function checkDownloadLev(file_idx){
             var download_lev = document.querySelector('.download_lev').innerText;
             var board_idx = document.querySelector('.idx').innerText;
             var id = document.querySelector('.id').innerText;
@@ -369,6 +381,25 @@
                     });
             }
         }
+        function addNestedComment(buttonElement,comment_idx) {
+            var inputValue = buttonElement.parentNode.querySelector('.nested-comment-content').value;
+            //input이 다중으로 켜져있을 수 있기 때문에 parentNode로 값을 찾아준다.
+            var formData = {
+                comment_idx : comment_idx,
+                board_idx : document.querySelector('.board_idx').value,
+                comment_content : inputValue
+            };
+            axios.post('/addNestedComment', formData)
+                .then(function (response) {
+                    console.log(response);
+                    alert('대댓글 작성 완료');
+                    location.reload();
+                })
+                .catch(function (error) {
+                    console.error(error);
+                });
+        }
+
 
 
     </script>
@@ -423,9 +454,25 @@
                         <div class="comment"
                              style="min-height: 300px; background-color: rgba(22, 26, 48, 0.1); border-radius: 10px; margin-bottom: 10px; padding: 10px">
                             <div class="comment-line" th:each="comment : ${comments}">
-                                <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
-                                <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
-                                <i class="fa fa-trash"></i>
+                                <span th:if="${comment.getComment_class()==1}">
+                                    &nbsp;&nbsp;&nbsp;┗ <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
+                                    <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
+                                </span>
+                                <span th:if="${comment.getComment_class()==0}">
+                                    <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
+                                    <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
+                                    <span th:if="${loginUser != null and (loginUser.id.toString().equals(board.id.toString()) or loginUser.id.toString().equals('admin'))}">
+                                        <i class="fa fa-reply" th:onclick="toggleCommentInput(this)"></i>
+                                        <i class="fa fa-trash"></i>
+                                    </span>
+                                </span>
+                                <div class="nested-comment-container" style="display: none">
+                                    <form>
+                                        <input th:class="nested-comment-content" th:type="text" placeholder="댓글 입력" th:style="'width:80%; height: 25px; padding-left:10px; margin-right:10px; border: none;-webkit-border-radius:0; background-color: rgba(22, 26, 48, 0.1); -webkit-appearance: none;'"
+                                               th:disabled="${loginUser == null}">
+                                        <button type="button" th:onclick="|addNestedComment(this, ${comment.comment_idx})|">작성하기</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
 

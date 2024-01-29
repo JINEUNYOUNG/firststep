@@ -341,12 +341,23 @@ body {
 
         function checkJumin() {
             let elInputJumin = document.getElementById('resident_registration_number');
-            elInputJumin.value = elInputJumin.value.replace(/[^0-9]/g, '');
+            let cleanedValue = elInputJumin.value.replace(/[^0-9]/g, '');
+
+            if (cleanedValue.length <= 13) {
+                elInputJumin.value = cleanedValue;
+            } else {
+                elInputJumin.value = cleanedValue.slice(-13);
+            }
         }
 
         function checkPhone() {
             let elInputPhone = document.getElementById('phone_number');
-            elInputPhone.value = elInputPhone.value.replace(/[^0-9]/g, '');
+            let cleanedValue = elInputPhone.value.replace(/[^0-9]/g, '');
+            if (cleanedValue.length <= 11) {
+                elInputPhone.value = cleanedValue;
+            } else {
+                elInputPhone.value = cleanedValue.slice(-11);
+            }
         }
         function isElementHidden(element) {
             return element.classList.contains('hide');
@@ -376,6 +387,16 @@ body {
             let elMismatchMessage = document.querySelector('.mismatch-message');
             let elStrongPasswordMessage = document.querySelector('.strongPassword-message');
             if (!isElementHidden(elSuccessMessage) || !isElementHidden(elFailureMessage) || !isElementHidden(elFailureMessageTwo) || !isElementHidden(elFailureMessageThree) || !isElementHidden(elMismatchMessage) || !isElementHidden(elStrongPasswordMessage)) {
+                hasError = true;
+            }
+            //3.주민번호와 핸드폰번호 수가 맞는지.
+            let elInputPhone = document.getElementById('phone_number');
+            let elInputJumin = document.getElementById('resident_registration_number');
+            console.log(elInputJumin.value.length)
+            if (elInputPhone.value.length !== 11) {
+                hasError = true;
+            }
+            if (elInputJumin.value.length !== 13) {
                 hasError = true;
             }
             //문제가 없다! 하면 true반환.

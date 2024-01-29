@@ -12,6 +12,7 @@ import java.util.List;
 @Mapper
 public interface commentMapper {
     int addComment(@Param("board_idx") int board_idx, @Param("comment_content") String comment_content, @Param("user_idx") int user_idx) throws Exception;
+    int addNestedComment(@Param("comment") Comment comment) throws Exception;
     List<CommentForm> findCommentByIdx(@Param("idx") int idx) throws Exception;
 
 }
