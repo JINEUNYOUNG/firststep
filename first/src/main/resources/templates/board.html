@@ -323,6 +323,20 @@
                     alert('로그인하세요');
                 });
         }
+        function deleteComment(element) {
+            var commentIdx = element.parentElement.querySelector('.comment_idx').innerText;
+            console.log(commentIdx);
+            axios.post('/deleteComment', { commentIdx: commentIdx })
+                .then(function (response) {
+                    alert('댓글 삭제 완료');
+                    location.reload();
+                })
+                .catch(function (error) {
+                    console.error('댓글 삭제 실패:', error);
+                });
+        }
+
+
         function toggleCommentInput(iconElement) {
             var commentContainer = iconElement.closest('.comment-line');
 
@@ -413,6 +427,7 @@
                         <span th:text="${board.title}"></span>
                     </th>
                     <div class="idx" th:text="${board.board_idx}" style="display:none"/>
+                    <div class="idx" th:text="${board.board_idx}" style="display:none"/>
                     <div class="notice" th:text="${board.notice}" style="display:none"/>
                     <div class="download_lev" th:text="${board.download_lev}" style="display:none"/>
                     <div class="type" th:text="${board.board_type}" style="display:none"/>
@@ -455,15 +470,19 @@
                              style="min-height: 300px; background-color: rgba(22, 26, 48, 0.1); border-radius: 10px; margin-bottom: 10px; padding: 10px">
                             <div class="comment-line" th:each="comment : ${comments}">
                                 <span th:if="${comment.getComment_class()==1}">
-                                    &nbsp;&nbsp;&nbsp;┗ <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
-                                    <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
-                                </span>
+                                        &nbsp;&nbsp;&nbsp;┗ <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
+                                        <span th:text="${comment.comment_content}"></span>
+                                        <span th:class="comment_idx" th:text="${comment.comment_idx}" th:style="'display:none;'"></span>
+                                        <span th:if="${loginUser != null and (loginUser.id.toString().equals(board.id.toString()) or loginUser.id.toString().equals('admin'))}">
+                                            <i class="fa fa-trash" th:onclick="|deleteComment(this)|"></i>
+                                        </span>
+                                    </span>
                                 <span th:if="${comment.getComment_class()==0}">
                                     <span th:text="${comment.id}" th:style="'font-weight:bold; font-size:11pt; margin-right:10px;'"></span>
                                     <span th:text="${comment.comment_content}"></span>&nbsp;&nbsp;
                                     <span th:if="${loginUser != null and (loginUser.id.toString().equals(board.id.toString()) or loginUser.id.toString().equals('admin'))}">
                                         <i class="fa fa-reply" th:onclick="|toggleCommentInput(this)|"></i>
-                                        <i class="fa fa-trash"></i>
+                                        <i class="fa fa-trash" th:onclick="|deleteComment(this)|"></i>
                                     </span>
                                 </span>
                                 <div class="nested-comment-container" style="display: none">

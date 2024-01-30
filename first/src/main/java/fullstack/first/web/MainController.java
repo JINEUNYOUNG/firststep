@@ -217,7 +217,7 @@ public class MainController {
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         //엑셀이 아닌 경우
         if (!extension.equals("xlsx") && !extension.equals("xls")) {
-            throw new IOException("엑셀파일만 업로드 해주세요.");
+            return "write";
         }
         Workbook workbook = null;
         //엑셀 버전에 따라 처리
