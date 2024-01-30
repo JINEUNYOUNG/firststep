@@ -81,12 +81,15 @@
             }
     </style>
         <script>
-
-            var message = '[[${message}]]'; // 문자열로 감싸주기
-            console.log(message);
-            if (message) {
-                alert(message);
+            window.onload = () => {
+                var message = document.getElementById('message').innerText.trim();
+                console.log(message);
+                if (message) {
+                    alert(message);
+                }
             }
+
+
         </script>
     <div class="logo">
         <p onclick="location.href='/'">FIRST</p>
@@ -111,5 +114,6 @@
         <div th:if="${loginUser != null}">
             <div class="header-right"><button class="logout-btn" onclick="location.href='/logout'">LOGOUT</button></div>
         </div>
-</div>
+        <div id="message" th:if="${message != null}" th:text="${message}" style="display:none;"></div>
+    </div>
 </html>

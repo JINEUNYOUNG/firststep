@@ -1,4 +1,4 @@
-package fullstack.first.vo;
+package fullstack.first.vo.form;
 
 import lombok.Data;
 

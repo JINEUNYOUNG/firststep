@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fullstack.first.mapper.userMapper">
 
-    <resultMap id="userResultMap" type="fullstack.first.vo.User">
+    <resultMap id="userResultMap" type="fullstack.first.vo.UserVO">
         <id property="user_idx" column="user_idx" />
         <result property="id" column="id" />
         <result property="password" column="password" />
@@ -20,7 +20,7 @@
     </select>
 
     <!-- 유저 등록 -->
-    <insert id="signup" parameterType="fullstack.first.vo.SignForm">
+    <insert id="signup" parameterType="fullstack.first.vo.form.SignForm">
         INSERT INTO user (id, password,user_name,resident_registration_number,phone_number,address) VALUES (#{id},  sha2(#{password},256),#{user_name}, sha2(#{resident_registration_number},256),#{phone_number},#{address});
     </insert>
 

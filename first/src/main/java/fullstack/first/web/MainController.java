@@ -2,6 +2,7 @@ package fullstack.first.web;
 
 import fullstack.first.service.*;
 import fullstack.first.vo.*;
+import fullstack.first.vo.form.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -11,13 +12,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class MainController {
 
     //메인화면. 세션에 로그인정보가 있으면 모델에 넣어준다.
     @GetMapping("/")
-    public String index(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) User loginUser,
+    public String index(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser,
                         Model model) {
         if (loginUser == null) {
             return "index";
@@ -60,22 +61,26 @@ public class MainController {
 
     //로그인처리(post) loginForm에 담은 id, pw 받아와서 대조 후 로그인
     @PostMapping("login")
-    public String login(@ModelAttribute @Validated LoginForm loginForm, HttpServletRequest request,
-                        BindingResult bindingResult, @RequestParam(defaultValue = "/") String redirectURL) throws Exception {
+    public String login(@Valid @ModelAttribute("loginForm") LoginForm loginForm, Errors errors, HttpServletRequest request, Model model,
+                        @RequestParam(defaultValue = "/") String redirectURL) throws Exception {
         //타입에러
-        if (bindingResult.hasErrors()) {
+        if (errors.hasErrors()){
+            System.out.println("타입에러");
+            model.addAttribute("valid_id_password","아이디 또는 비밀번호가 누락 또는 타입이 맞지 않습니다.");
             return "login";
         }
         //id, pw로 db와 대조 후 에러
-        User loginUser = loginService.login(loginForm.getId(), loginForm.getPassword());
+        UserVO loginUser = loginService.login(loginForm.getId(), loginForm.getPassword());
         if (loginUser == null) {
-            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
+            model.addAttribute("valid_login", "아이디 또는 비밀번호가 맞지 않습니다.");
+            System.out.println("대조");
             return "login";
         }
         //로그인 성공
         HttpSession session = request.getSession();
         session.setAttribute(SessionConstants.LOGIN_USER, loginUser);   // 세션에 로그인 회원 정보 보관
-        return "redirect:/";
+        model.addAttribute("message", "로그인 성공!");
+        return "index";
     }
 
     //로그아웃처리
@@ -96,8 +101,16 @@ public class MainController {
 
     //회원가입 signForm에 담긴 정보로 가입
     @PostMapping("signup")
-    public String signupUser(@ModelAttribute("signForm") SignForm signForm,
-                             Model model) throws Exception {
+    public String signupUser(@Valid @ModelAttribute("signForm") SignForm signForm, Errors errors, Model model) throws Exception {
+        if (errors.hasErrors()){
+            model.addAttribute("signForm", signForm); //오류 시에 다시 입력값 채워줄 데이터
+            Map<String, String> validatorResult = signupService.validateHandling(errors);
+            for (String key : validatorResult.keySet()){ //오류메시지 반환
+                model.addAttribute(key, validatorResult.get(key));
+            }
+            System.out.println(validatorResult.keySet());
+            return "signup";
+        }
         signupService.signup(signForm);
         return "redirect:/login";
     }
@@ -112,12 +125,12 @@ public class MainController {
         if (boardlist != null) {
             model.addAttribute("boardlist", boardlist);
         } else {
-            model.addAttribute("boardlist", new ArrayList<Board>());
+            model.addAttribute("boardlist", new ArrayList<BoardVO>());
         }
         if (noticelist != null) {
             model.addAttribute("noticelist", noticelist);
         } else {
-            model.addAttribute("noticelist", new ArrayList<Board>());
+            model.addAttribute("noticelist", new ArrayList<BoardVO>());
         }
         //페이지정보 반환
         int totalPage = boardService.getTotalPage(num);
@@ -128,7 +141,8 @@ public class MainController {
 
     //상세글화면. 현재 세션(로그인)과 게시물 하나의 정보를 가져와 반환
     @GetMapping("board")
-    public String board(HttpSession session, Model model, @RequestParam(name = "idx", required = false) int idx) throws Exception {
+    public String board(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser,
+                        Model model, @RequestParam(name = "idx", required = false) int idx) throws Exception {
         //게시글정보
         ListForm singleBoard = boardService.findBoardByIdx(idx);
         model.addAttribute("board", singleBoard);
@@ -138,17 +152,16 @@ public class MainController {
         List<CommentForm> comments = commentService.findCommentByIdx(idx);
         model.addAttribute("comments", comments);
         //로그인유저정보
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
         model.addAttribute("loginUser", loginUser);
         return "board";
     }
 
     //글작성화면. 작성자확인을 위해 현재 로그인정보를 넣어준다.
     @GetMapping("write")
-    public String write(HttpSession session, Model model) {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public String write(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, Model model) {
         if (loginUser == null) {
-            throw new NullPointerException("로그인해야합니다.");
+            model.addAttribute("message", "로그인해야합니다.");
+            return "index";
         }
         model.addAttribute("loginUser", loginUser);
         return "write";
@@ -198,7 +211,8 @@ public class MainController {
 
     //엑셀데이터를 받아와 읽어 write화면에 뿌려준다
     @PostMapping("excel/read")
-    public String readExcel(@RequestParam("excelFile") MultipartFile file, Model model, HttpSession session) throws IOException {
+    public String readExcel(@RequestParam("excelFile") MultipartFile file, Model model,
+                            @SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser) throws IOException {
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf(".") + 1);
         //엑셀이 아닌 경우
@@ -221,9 +235,8 @@ public class MainController {
         data.setBoard_type((int)row.getCell(2).getNumericCellValue());
         model.addAttribute("excel", data);
         //writer 처리
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
         if (loginUser == null) {
-            throw new NullPointerException("로그인해야합니다.");
+            return "redirect:/";
         }
         model.addAttribute("loginUser", loginUser);
 

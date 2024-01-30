@@ -1,12 +1,13 @@
-package fullstack.first.vo;
+package fullstack.first.vo.form;
 
 import lombok.Data;
+
 import java.sql.Timestamp;
 
 @Data
-public class Comment {
+public class CommentForm {
     private int comment_idx;
-    private int user_idx;
+    private String id;
     private int board_idx;
     private String comment_content;
     private Timestamp comment_reg_date;

@@ -1,15 +1,13 @@
 package fullstack.first.service;
 
 import fullstack.first.mapper.boardMapper;
-import fullstack.first.vo.Board;
-import fullstack.first.vo.ListForm;
-import fullstack.first.vo.WriteForm;
+import fullstack.first.vo.form.ListForm;
+import fullstack.first.vo.form.WriteForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.ArrayList;
 
 
 @RequiredArgsConstructor

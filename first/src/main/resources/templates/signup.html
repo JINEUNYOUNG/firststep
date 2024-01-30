@@ -9,50 +9,64 @@
 
 <th:block layout:fragment="content">
     <!--/* 회원가입 popup */-->
-    <div class="signup-page">
-        <div class="form">
-            <form th:class="signForm" th:id="signForm" th:onsubmit="return validateForm()" th:object="${signForm}" th:action="@{/signup}" method="post">
-                <table class="tb tb_row tl">
-
+    <div th:class="signup-page">
+        <div th:class="form">
+            <form th:class="signForm" th:id="signForm" th:onsubmit="return validateForm()" th:object="${signForm}" th:action="@{/signup}" th:method="post">
+                <table>
                     <tbody>
                     <tr>
-                        <td class="wrap">
-                            <input type="text" name="id" id="id" placeholder="아이디" maxlength="20"
-                                   onkeyup="checkLoginId()"/>
-                            <button type="button" id="idCheckBtn" class="btns btn_st5"
-                                    onclick="checkDuplicate(document.getElementById('id').value);">중복확인
-                            </button></td>
+                        <td th:class="wrap">
+                            <input th:type="text" th:name="id" id="id" th:placeholder="아이디" th:maxlength="20" th:onkeyup="checkLoginId()" th:value="${signForm != null and signForm.id != null ? signForm.id : ''}"/>
+                            <button th:type="button" th:id="idCheckBtn" th:class="'btns btn_st5'" th:onclick="|checkDuplicate(document.getElementById('id').value)|">중복확인</button>
+                        </td>
                     </tr>
                     <tr>
-                    <td class="success-message hide">중복확인해주시기 바랍니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
-                    <td class="failure-message hide">아이디는 4~12글자이어야 합니다</td>
-                    <td class="failure-message2 hide">영어 또는 숫자만 가능합니다</td>
-                    <td class="failure-message3 hide">중복된 아이디입니다</td>
+                        <td th:class="'success-message hide'">중복확인해주시기 바랍니다</td> <!--떠있으면 중복확인 전, 후에 hide-->
+                        <td th:class="'failure-message hide'">아이디는 4~12글자이어야 합니다</td>
+                        <td th:class="'failure-message2 hide'">영어 또는 숫자만 가능합니다</td>
+                        <td th:class="'failure-message3 hide'">중복된 아이디입니다</td>
+                        <td th:if="${not #strings.isEmpty(valid_id)}" th:class="valid_message" th:value="${valid_id}"></td>
                     </tr>
                     <tr>
-
-                        <td><input type="password" name="password" id="password" placeholder="비밀번호" maxlength="30" onkeyup="checkPassword()"/></td>
+                        <td >
+                            <input th:type="password" th:name="password" th:id="password" th:value="${signForm != null and signForm.password != null ? signForm.password : ''}" th:placeholder="|비밀번호|" th:maxlength="30" th:onkeyup="checkPassword()"/>
+                        </td>
                     </tr>
                     <tr>
-                        <td class="strongPassword-message hide">8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 사용하세요</td>
+                        <td th:class="'strongPassword-message hide'">8글자 이상, 영문, 숫자, 특수문자(@$!%*#?&)를 사용하세요</td>
+                        <td th:if="${valid_password != null}" th:class="valid_message" th:text="${valid_password}"></td>
                     </tr>
                     <tr>
-                        <td><input type="password" name="passwordCheck" id="passwordCheck" placeholder="비밀번호 재입력"
-                                   maxlength="30" onkeyup="checkPasswordRetype()"/></td>
+                        <td>
+                            <input th:type="password" th:name="passwordCheck" th:id="passwordCheck" th:placeholder="|비밀번호 재입력|" th:maxlength="30" th:onkeyup="checkPasswordRetype()"/>
+                        </td>
                     </tr>
                         <tr>
-                        <td class="mismatch-message hide">비밀번호가 일치하지 않습니다</td></tr>
-
+                            <td th:class="'mismatch-message hide'">비밀번호가 일치하지 않습니다</td></tr>
+                        <tr>
+                            <td>
+                                <input th:type="text" th:name="user_name" th:id="user_name" th:placeholder="|이름|" th:maxlength="10" th:value="${signForm != null and signForm.user_name != null ? signForm.user_name : ''}"/>
+                            </td>
+                        </tr>
                     <tr>
-                        <td><input type="text" name="user_name" id="user_name" placeholder="이름" maxlength="10"/></td>
+                        <td th:if="${valid_user_name != null}" th:class="valid_message" th:text="${valid_user_name}"></td>
                     </tr>
                     <tr>
-                        <td><input type="number" name="resident_registration_number" id="resident_registration_number" placeholder="주민등록번호(숫자 13자리 입력)"
-                                   onKeyup="checkJumin()"/></td>
+                        <td>
+                            <input th:type="number" th:name="resident_registration_number" th:id="resident_registration_number" th:placeholder="|주민등록번호(숫자 13자리 입력)|"
+                                   th:onKeyup="checkJumin()" th:value="${signForm != null and signForm.resident_registration_number != null ? signForm.resident_registration_number : ''}"/>
+                        </td>
                     </tr>
                     <tr>
-                        <td><input type="number" name="phone_number" id="phone_number" placeholder="휴대전화번호(숫자 11자리 입력)"
-                                   onKeyup="checkPhone()"/></td>
+                        <td th:if="${not #strings.isEmpty(valid_idvalid_resident_registration_number)}" th:class="valid_message" th:value="${valid_resident_registration_number}"></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input th:type="number" th:name="phone_number" th:id="phone_number" th:placeholder="|휴대전화번호(숫자 11자리 입력)|" th:onKeyup="checkPhone()" th:value="${signForm != null and signForm.phone_number != null ? signForm.phone_number : ''}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td th:if="${not #strings.isEmpty(valid_phone_number)}" th:class="valid_message" th:value="${valid_phone_number}"></td>
                     </tr>
                     <tr>
                         <td><div class="wrap">
@@ -64,15 +78,17 @@
                             <input type="text" id="detailAddress" name="detailAddress" placeholder="상세주소">
                             <input type="text" id="extraAddress" name="extraAddress" placeholder="참고항목">
                         </td>
-
+                    </tr>
+                    <tr>
+                        <td th:if="${not #strings.isEmpty(valid_address)}" th:class="valid_message" th:value="${valid_address}"></td>
                     </tr>
                     </tbody>
                 </table>
                 <p class="btn_set">
-                    <button type="submit" class="btns btn_st2">가입</button>
-                    <button type="reset" class="btns btn_bdr2" onclick="location.href='/signup'">리셋</button>
+                    <button th:type="submit" th:class="'btns btn_st2'">가입</button>
+                    <button th:type="reset" th:class="'btns btn_bdr2'" th:onclick="|location.href='/signup'|">리셋</button>
                 </p>
-                <p id="errorMessage" class="errorMessage"></p>
+                <p th:id="errorMessage" th:class="errorMessage"></p>
             </form>
         </div>
         </div>
@@ -189,7 +205,7 @@ body {
       align-items: center; /* 수직 중앙 정렬 */
 
 }
-    .success-message, .failure-message, .failure-message2, .failure-message3,.strongPassword-message, .mismatch-message, .errorMessage{
+    .success-message, .failure-message, .failure-message2, .failure-message3,.strongPassword-message, .mismatch-message, .errorMessage, .valid_message{
     font-size:10pt;
     color:red;
     }

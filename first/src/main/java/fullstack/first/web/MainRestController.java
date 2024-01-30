@@ -2,9 +2,10 @@ package fullstack.first.web;
 
 import fullstack.first.service.*;
 import fullstack.first.vo.*;
-import fullstack.first.vo.Comment;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import fullstack.first.vo.CommentVO;
+import fullstack.first.vo.form.DownloadForm;
+import fullstack.first.vo.form.ListForm;
+import fullstack.first.vo.form.LoginForm;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +15,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 public class MainRestController {
@@ -46,15 +45,14 @@ public class MainRestController {
 
     //axios를 통한 비동기 로그인 api
     @PostMapping("/login2")
-    public ResponseEntity<?> login2(@RequestBody @Validated LoginForm loginForm, BindingResult bindingResult, HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> login2(@RequestBody @Valid LoginForm loginForm, Errors errors, HttpServletRequest request) throws Exception {
         //타입불일치
-        if (bindingResult.hasErrors()) {
+        if (errors.hasErrors()) {
             return ResponseEntity.badRequest().body("아이디 또는 비밀번호가 누락 또는 타입에 맞지 않습니다.");
         }
         //id, pw 대조 후
-        User loginUser = loginService.login(loginForm.getId(), loginForm.getPassword());
+        UserVO loginUser = loginService.login(loginForm.getId(), loginForm.getPassword());
         if (loginUser == null) {
-            bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다.");
             return ResponseEntity.badRequest().body("아이디 또는 비밀번호가 맞지 않습니다.");
         }
         //로그인 성공 후 세션에 로그인 정보 보관
@@ -73,8 +71,7 @@ public class MainRestController {
 
     //로그인 검증 api
     @GetMapping("/checkAuthority")
-    public ResponseEntity<String> checkAuthority(HttpSession session) {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> checkAuthority(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser) {
         return (loginUser == null)
                 ? ResponseEntity.badRequest().body("로그인하지 않은 사용자입니다.")
                 : ResponseEntity.ok().body("로그인 확인되었습니다.");
@@ -82,9 +79,8 @@ public class MainRestController {
 
     //좋아요+1 api
     @PostMapping("/increaseLike")
-    public ResponseEntity<String> increaseLike(HttpSession session, @RequestBody Board board) throws Exception {
+    public ResponseEntity<String> increaseLike(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestBody BoardVO board) throws Exception {
         int board_idx = board.getBoard_idx();
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
         return (likeService.increaseLike(loginUser.getUser_idx(), board_idx))
                 ? ResponseEntity.ok().body("좋아요성공")
                 : ResponseEntity.badRequest().body("이미 했습니다.");
@@ -92,16 +88,14 @@ public class MainRestController {
 
     //글삭제 api
     @DeleteMapping("/deleteBoard")
-    public ResponseEntity<String> deleteBoard(HttpSession session, @RequestParam int board_idx) throws Exception {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> deleteBoard(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestParam int board_idx) throws Exception {
         return (boardService.deleteBoard(board_idx, loginUser.getUser_idx()) == 0)
                 ? ResponseEntity.badRequest().body("권한이 없습니다.")
                 : ResponseEntity.ok().body("삭제완료");
     }
 
     @GetMapping("/setNotice")
-    public ResponseEntity<String> setNotice(HttpSession session, @RequestParam int board_idx) throws Exception {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> setNotice(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestParam int board_idx) throws Exception {
         if (loginUser.getUser_idx() == 1) {
             boardService.setNotice(board_idx);
             return ResponseEntity.ok().body("공지지정완료");
@@ -111,8 +105,7 @@ public class MainRestController {
     }
 
     @GetMapping("/cancelNotice")
-    public ResponseEntity<String> cancelNotice(HttpSession session, @RequestParam int board_idx) throws Exception {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> cancelNotice(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestParam int board_idx) throws Exception {
         if (loginUser.getUser_idx() == 1) {
             boardService.cancelNotice(board_idx);
             return ResponseEntity.ok().body("공지취소완료");
@@ -122,8 +115,7 @@ public class MainRestController {
     }
 
     @PostMapping("/addComment")
-    public ResponseEntity<String> addComment(HttpSession session, @RequestBody Comment comment) throws Exception {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> addComment(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestBody CommentVO comment) throws Exception {
         comment.setUser_idx(loginUser.getUser_idx());
         return (commentService.addComment(comment))
                 ? ResponseEntity.ok().body("댓글작성완료")
@@ -131,8 +123,7 @@ public class MainRestController {
     }
 
     @PostMapping("/addNestedComment")
-    public ResponseEntity<String> addNestedComment(HttpSession session, @RequestBody Comment comment) throws Exception {
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<String> addNestedComment(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser, @RequestBody CommentVO comment) throws Exception {
         comment.setUser_idx(loginUser.getUser_idx());
         System.out.println(comment.toString());
         return (commentService.addNestedComment(comment))
@@ -142,9 +133,8 @@ public class MainRestController {
 
     //다운로드 선택 시, 권한 비교 후 url반환
     @PostMapping("download")
-    public ResponseEntity<Resource> download(HttpSession session, @RequestBody DownloadForm downloadForm) throws Exception {
-
-        User loginUser = (User) session.getAttribute(SessionConstants.LOGIN_USER);
+    public ResponseEntity<Resource> download(@SessionAttribute(name = SessionConstants.LOGIN_USER, required = false) UserVO loginUser,
+                                             @RequestBody DownloadForm downloadForm) throws Exception {
         //널값 처리 먼저
         if (loginUser == null) {
             if (downloadForm.getDownload_lev() == 3) {

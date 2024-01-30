@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fullstack.first.mapper.boardMapper">
 
-    <resultMap id="boardResultMap" type="fullstack.first.vo.ListForm">
+    <resultMap id="boardResultMap" type="fullstack.first.vo.form.ListForm">
         <id property="board_idx" column="board_idx"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>

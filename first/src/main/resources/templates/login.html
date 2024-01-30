@@ -4,18 +4,21 @@
 
 <th:block layout:fragment="content">
 
-    <div class="login-page">
-        <div class="form">
-        <form th:class="login-form" th:action="@{/login}" method="post" th:object="${loginForm}">
-            <input type="text" id="id" name="id" required placeholder="id">
-            <input type="password" id="password" name="password" required placeholder="password">
-            <div class="button-wrap"><button type="submit" >로그인1(Form)</button>
-                <button type="button" onclick="submitLoginForm()">로그인2(Axios)</button></div>
+    <div th:class="login-page">
+        <div th:class="form">
+        <form th:class="login-form" th:action="@{/login}" th:method="post" th:object="${loginForm}">
+            <input th:type="text" th:id="id" th:name="id" th:placeholder="id">
+            <input th:type="password" th:id="password" th:name="password" th:placeholder="password">
+            <div th:class="button-wrap">
+                <button th:type="submit" >로그인1(Form)</button>
+                <button th:type="button" onclick="submitLoginForm()">로그인2(Axios)</button></div>
             <p class="message">Already registered? <a th:href="@{/signup}">회원가입
             </a></p>
-            <div th:if="${#fields.hasGlobalErrors()}">
-                <p class="field-error" id="errorMessages1" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+            <div>
+                <p th:if="${valid_login != null}" th:class="field-error" th:text="${valid_login}"></p>
+                <p th:if="${valid_id_password != null}" th:class="field-error" th:text="${valid_id}"></p>
             </div>
+
             <!-- 아래는 비동기에서 사용할 에러 메세지 부분 -->
             <p class="field-error" id="errorMessages2"></p>
         </form>
@@ -60,8 +63,8 @@
           padding: 15px;
           color: #FFFFFF;
           font-size: 14px;
-          -webkit-transition: all 0.3 ease;
-          transition: all 0.3 ease;
+          -webkit-transition: all 0.3s ease;
+          transition: all 0.3s ease;
           cursor: pointer;
           width:50%
         }
@@ -119,10 +122,16 @@
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
-            .button-wrap{
+        .button-wrap{
             display:flex;
-            }
-            </style>
+        }
+        .field-error{
+            font-size:10pt;
+            color:red;
+        }
+    </style>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
     <script>
 
         function submitLoginForm() {
@@ -138,6 +147,7 @@
             axios.post('/login2', formData) //post방식으로 login에 보내기
                 .then(function (response) {
                     console.log(response.data);
+                    alert('로그인성공!');
                     window.location.href = '/';
                 })
                 .catch(function (error) {
@@ -145,9 +155,7 @@
                     document.getElementById('id').value = "";
                     document.getElementById('password').value = "";
                     // 에러 메시지를 화면에 표시
-
-                    document.getElementById('errorMessages2').innerHTML = '<p class="field-error">아이디 또는 비밀번호가 맞지 않습니다.</p>';
-
+                    document.getElementById('errorMessages2').innerHTML = '<p class="field-error">' + error.response.data + '</p>';
                 });
         }
 

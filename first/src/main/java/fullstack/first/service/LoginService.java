@@ -1,7 +1,7 @@
 package fullstack.first.service;
 
 import fullstack.first.mapper.userMapper;
-import fullstack.first.vo.User;
+import fullstack.first.vo.UserVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class LoginService {
     public userMapper mapper;
 
     //id를 보내 유저를 찾아 유저객체를 받아준다. 패스워드는 암호화(SHA256)하여 동일하면 유저객체반환 else null
-    public User login(String id, String password) throws Exception {
+    public UserVO login(String id, String password) throws Exception {
         if (mapper.findById(id) == null) {
             return null;
         }

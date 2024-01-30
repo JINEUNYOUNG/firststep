@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class User {
+public class UserVO {
     private int user_idx;
     private String id;
     private String password;                     //비밀번호(해시)

@@ -1,7 +1,7 @@
 package fullstack.first.mapper;
 
-import fullstack.first.vo.ListForm;
-import fullstack.first.vo.WriteForm;
+import fullstack.first.vo.form.ListForm;
+import fullstack.first.vo.form.WriteForm;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

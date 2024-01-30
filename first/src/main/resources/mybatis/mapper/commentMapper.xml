@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="fullstack.first.mapper.commentMapper">
 
-    <resultMap id="commentResultMap" type="fullstack.first.vo.CommentForm">
+    <resultMap id="commentResultMap" type="fullstack.first.vo.form.CommentForm">
         <id property="comment_idx" column="comment_idx" />
         <result property="id" column="id" />
         <result property="board_idx" column="board_idx" />
